@@ -21,13 +21,14 @@ MonoBehaviour:
   clipSize: 30
   pellets: 0
   pelletsSpread: 0
+  range: 0
   fireRate: 0.1
   bulletForce: 20
   bulletPrefab: {fileID: 7127483739802894902, guid: 1a4b72cb174aa4e419805af6413a5fbe,
     type: 3}
   kickback: 0.06
   movementSpeed: 0.5
-  reloadTime: 2.5
+  reloadTime: 2.6
   equipSound: {fileID: 8300000, guid: 7950473cc87db884cb59f03bb935cc6b, type: 3}
   slideSound: {fileID: 0}
   reloadSound: {fileID: 8300000, guid: 84adff6c511b3194eb2721d3973475cb, type: 3}

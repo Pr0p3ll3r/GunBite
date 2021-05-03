@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
     public bool isDead;
     public bool invincible;
     public ProfileData playerProfile;
-    public GameManager gameManager;
     public GameObject deathEffect;
     private PlayerHUD hud;
     [HideInInspector] public LevelSystem ls;
@@ -65,8 +64,6 @@ public class Player : MonoBehaviour
 
             hud.RefreshBars(currentHealth, maxHealth, currentArmor);
 
-            //Debug.Log("HP: " + currentHealth + " A: " + currentArmor);
-
             if (currentHealth <= 0)
             {
                 Die();
@@ -83,7 +80,7 @@ public class Player : MonoBehaviour
         isDead = true;
         Instantiate(deathEffect, transform.position, Quaternion.identity);
         hud.ShowDeadText();
-        gameManager.Gameover();
+        GameManager.Instance.Gameover();
         Destroy(gameObject);
     }
 

@@ -26,6 +26,7 @@ public class WeaponManager : MonoBehaviour
     private Coroutine muzzle;
     private Coroutine equip;
     private Coroutine reloadHud;
+    private Coroutine reload;
     private bool burst;
 
     private void Start()
@@ -38,6 +39,7 @@ public class WeaponManager : MonoBehaviour
         }
 
         equip = StartCoroutine(Equip(0));
+        hud.RefreshWeapon(loadout);
     }
 
     void Update()
@@ -76,7 +78,7 @@ public class WeaponManager : MonoBehaviour
                         if (Input.GetMouseButtonDown(0) && currentCooldown <= 0 && isReloading == false)
                         {
                             if (loadout[selectedWeapon].FireBullet()) Shoot();
-                            else if (currentWeaponData.OutOfAmmo()) StartCoroutine(Reload());
+                            else if (currentWeaponData.OutOfAmmo()) reload = StartCoroutine(Reload());
                         }
                     }
                     else if(loadout[selectedWeapon].firingMode == 2)
@@ -84,7 +86,7 @@ public class WeaponManager : MonoBehaviour
                         if (Input.GetMouseButtonDown(0) && currentCooldown <= 0 && isReloading == false)
                         {
                             if (loadout[selectedWeapon].FireBurst()) StartCoroutine(Burst());
-                            else if (currentWeaponData.OutOfAmmo()) StartCoroutine(Reload());
+                            else if (currentWeaponData.OutOfAmmo()) reload = StartCoroutine(Reload());
                         }
                     }
                     else
@@ -92,11 +94,11 @@ public class WeaponManager : MonoBehaviour
                         if (Input.GetMouseButton(0) && currentCooldown <= 0 && isReloading == false)
                         {
                             if (loadout[selectedWeapon].FireBullet()) Shoot();
-                            else if (currentWeaponData.OutOfAmmo()) StartCoroutine(Reload());
+                            else if (currentWeaponData.OutOfAmmo()) reload = StartCoroutine(Reload());
                         }
                     }
 
-                    if (Input.GetKeyDown(KeyCode.R)) if (currentWeaponData.OutOfAmmo() && isReloading == false) StartCoroutine(Reload());                 
+                    if (Input.GetKeyDown(KeyCode.R)) if (currentWeaponData.OutOfAmmo() && isReloading == false) reload = StartCoroutine(Reload());
                 }              
             }
         }
@@ -117,7 +119,7 @@ public class WeaponManager : MonoBehaviour
         {
             if (isReloading)
             {
-                StopCoroutine("Reload");
+                StopCoroutine(reload);
                 StopCoroutine(reloadHud);
                 hud.reloading.SetActive(false);
             }
@@ -238,7 +240,12 @@ public class WeaponManager : MonoBehaviour
         {
             if (enemy.gameObject.layer == LayerMask.NameToLayer("EnemyHitbox"))
             {
-                enemy.gameObject.transform.root.GetComponent<Zombie>().TakeDamage(currentWeaponData.damage);
+                Zombie z = enemy.gameObject.transform.root.GetComponent<Zombie>();
+                BossPlant bp = enemy.gameObject.transform.root.GetComponent<BossPlant>();
+                BossHead bh = enemy.gameObject.transform.root.GetComponent<BossHead>();
+                if (z != null) z.TakeDamage(currentWeaponData.damage);
+                if (bp != null) bp.TakeDamage(currentWeaponData.damage);
+                if (bh != null) bh.TakeDamage(currentWeaponData.damage);
             }
         }
 
@@ -262,12 +269,19 @@ public class WeaponManager : MonoBehaviour
                 currentWeapon.GetComponent<Animator>().Play("Reload", 0, 0);
         }
 
-        reloadHud = StartCoroutine(ReloadingCircle(currentWeaponData.reloadTime + 0.5f));
+        if (reloadHud != null) StopCoroutine(reloadHud);
 
         if (currentWeaponData.insert)
         {
             do
             {
+                if (reloadHud != null) StopCoroutine(reloadHud);
+                if (!currentWeaponData.OutOfAmmo())
+                {
+                    isReloading = false;
+                    StopCoroutine(reload);
+                }   
+                reloadHud = StartCoroutine(ReloadingCircle(currentWeaponData.insertTime));
                 weaponSound.PlayOneShot(currentWeaponData.reloadSound);
                 yield return new WaitForSeconds(currentWeaponData.insertTime);
                 currentWeaponData.Reload();
@@ -277,14 +291,16 @@ public class WeaponManager : MonoBehaviour
         }
         else
         {
+
+            reloadHud = StartCoroutine(ReloadingCircle(currentWeaponData.reloadTime));
             weaponSound.clip = currentWeaponData.reloadSound;
             weaponSound.Play();
             yield return new WaitForSeconds(currentWeaponData.reloadTime);
             currentWeaponData.Reload();
             hud.RefreshAmmo(currentWeaponData.GetClip(), currentWeaponData.GetAmmo());
+            yield return new WaitForSeconds(0.2f);
         }
 
-        yield return new WaitForSeconds(0.5f);
         isReloading = false;
     }
 
@@ -322,7 +338,7 @@ public class WeaponManager : MonoBehaviour
 
         if (currentWeapon != null)
         {
-            if (isReloading) StopCoroutine("Reload");
+            if (isReloading) StopCoroutine(reload);
             if (muzzle != null) StopCoroutine(muzzle);
             if (equip != null) StopCoroutine(equip);
             isReloading = false;

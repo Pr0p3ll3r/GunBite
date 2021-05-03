@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
         player = GetComponent<Player>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         hud = GetComponent<PlayerHUD>();
+        lastMove = new Vector2(1f, 0f);
     }
 
     private void Update()

@@ -3,18 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Zombie : MonoBehaviour
+public class Zombie : ZombieInfo
 {
-    public string type;
-    public int maxHealth = 100;
     private int currentHealth;
-    public int damage = 5;
-    public float attackDistance = 5f;
-    public float speed = 5f;
-    public float attackCooldown = 2;
-    
-    public int exp;
-    public int money;
 
     private Transform player;
     public GameObject deathEffect;
@@ -100,7 +91,7 @@ public class Zombie : MonoBehaviour
             animator.SetBool("Attack", true);
             lastAttackTime = Time.time;
 
-            if (type == "Spitter")
+            if (type == Type.Spitter)
             {
                 Transform spitPoint = transform.Find("SpitPoint");
 
@@ -125,20 +116,24 @@ public class Zombie : MonoBehaviour
             SetHealthBar();
             if (currentHealth <= 0)
             {
-                isDead = true;
-                player.gameObject.GetComponent<Player>().Reward(exp, money);
-                Instantiate(deathEffect, transform.position, Quaternion.identity);
-                moneyReward.text = $"+{money}$";
-                moneyReward.GetComponent<Animator>().Play("FadeOut");
-                GetComponent<SpriteRenderer>().enabled = false;
-                GetComponent<Collider2D>().enabled = false;
-                foreach (Collider2D col in hitbox.GetComponents<Collider2D>())
-                    col.enabled = false;
-                if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
-                if (type == "Boomer") Explode();
-                else StartCoroutine(Destroy());
+                Die();
             }
         }
+    }
+
+    public virtual void Die()
+    {
+        isDead = true;
+        player.gameObject.GetComponent<Player>().Reward(exp, money);
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        moneyReward.text = $"+{money}$";
+        moneyReward.GetComponent<Animator>().Play("FadeOut");
+        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
+        hitbox.GetComponent<Collider2D>().enabled = false;
+        if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
+        if (type == Type.Boomer) Explode();
+        else StartCoroutine(Destroy());
     }
 
     IEnumerator Destroy()
@@ -163,14 +158,6 @@ public class Zombie : MonoBehaviour
         {
             if (col.gameObject.tag.Equals("Player"))
             {
-                //Vector2 closestPoint = col.ClosestPoint(transform.position);
-                //float distance = Vector3.Distance(closestPoint, transform.position);
-
-                //float damagePercent = Mathf.InverseLerp(radius, 0, distance);
-                //int damageToApply = explosionDamage;
-
-                //if (damagePercent < 0.95) damageToApply = (int)(damageToApply * damagePercent);
-                //Debug.Log("Damage: " + damageToApply);
                 col.gameObject.transform.root.GetComponent<Player>().TakeDamage();
             }
         }

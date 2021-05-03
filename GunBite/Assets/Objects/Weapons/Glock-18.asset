@@ -28,7 +28,7 @@ MonoBehaviour:
     type: 3}
   kickback: 0.1
   movementSpeed: 0.5
-  reloadTime: 2.18
+  reloadTime: 2.4
   equipSound: {fileID: 8300000, guid: 75e9325a5b67cee41974de57e5125372, type: 3}
   slideSound: {fileID: 0}
   reloadSound: {fileID: 8300000, guid: 53bfa8dfccaac174e932c9e9c953a183, type: 3}

@@ -29,8 +29,10 @@ public class Bullet : MonoBehaviour
         {
             Zombie z = collision.gameObject.transform.root.GetComponent<Zombie>();
             BossPlant bp = collision.gameObject.transform.root.GetComponent<BossPlant>();
+            BossHead bh = collision.gameObject.transform.root.GetComponent<BossHead>();
             if (z != null) z.TakeDamage(damage);
             if (bp != null) bp.TakeDamage(damage);
+            if (bh != null) bh.TakeDamage(damage);
             Destroy(gameObject);
         }
         else if (collision.gameObject.tag.Equals("Enemy") && isGrenade)
@@ -71,7 +73,12 @@ public class Bullet : MonoBehaviour
 
                 if (damagePercent < 0.95) damageToApply = (int)(damageToApply * damagePercent);
                 //Debug.Log("Damage: " + damageToApply);
-                col.gameObject.transform.root.GetComponent<Zombie>().TakeDamage(damageToApply);
+                Zombie z = col.gameObject.transform.root.GetComponent<Zombie>();
+                BossPlant bp = col.gameObject.transform.root.GetComponent<BossPlant>();
+                BossHead bh = col.gameObject.transform.root.GetComponent<BossHead>();
+                if (z != null) z.TakeDamage(damageToApply);
+                if (bp != null) bp.TakeDamage(damageToApply);
+                if (bh != null) bh.TakeDamage(damageToApply);
             }
         }
         Destroy(gameObject);

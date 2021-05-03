@@ -8,7 +8,6 @@ public class Enemy
 	public string name;
 	public int amount;
 	public GameObject prefab;
-	public ZombieInfo info;
 }
 
 [System.Serializable]
@@ -17,6 +16,7 @@ public class Wave
 	public string name = "Wave";
 	public Enemy[] enemies;
 	public float spawnDelay;
+	public bool boss;
 }
 
 public class WaveManager : MonoBehaviour
@@ -34,6 +34,7 @@ public class WaveManager : MonoBehaviour
 	private int currentWave = 1;
 	public Transform[] spawnPoints;
 	public Transform[] spawnPointsBossPlant;
+	public GameObject bigHeadPrefab;
 
 	[Header("Start Values")]
 	public int startHealth = 100;
@@ -46,8 +47,6 @@ public class WaveManager : MonoBehaviour
 	private int currentHealth;
 	[SerializeField]
 	private float currentMoveSpeed;
-	[SerializeField]
-	private int currentDamage;
 	[SerializeField]
 	private int currentEXP;
 	[SerializeField]
@@ -111,15 +110,25 @@ public class WaveManager : MonoBehaviour
 	{
 		state = SpawnState.SPAWNING;
 		
-		if(currentWave == waves.Length)
+		if(_wave.boss)
         {
-			SoundManager.Instance.Play("BossApear");
-			foreach (Transform spawnPoint in spawnPointsBossPlant)
-			{
-				Instantiate(_wave.enemies[0].prefab, spawnPoint.position, spawnPoint.rotation);
+			switch(_wave.name)
+            {
+				case "BossPlant":
+					SoundManager.Instance.Play("BossApear");
+					foreach (Transform spawnPoint in spawnPointsBossPlant)
+					{
+						Instantiate(_wave.enemies[0].prefab, spawnPoint.position, spawnPoint.rotation);
 
-				ZombieQuantity(1);
-			}
+						ZombieQuantity(1);
+					}
+					break;
+				case "BossHead":
+					Transform s = spawnPoints[Random.Range(0, spawnPoints.Length)];
+					Instantiate(_wave.enemies[0].prefab, s.position, s.rotation);
+					ZombieQuantity(1);
+					break;
+            }
 		}
 		else
         {
@@ -190,7 +199,6 @@ public class WaveManager : MonoBehaviour
 
 		Zombie zombie = zombieGO.GetComponent<Zombie>();
 		zombie.maxHealth = currentHealth;
-		zombie.damage = currentDamage;
 		zombie.exp = currentEXP;
 		zombie.money = currentMoney;
 		zombie.speed = currentMoveSpeed;

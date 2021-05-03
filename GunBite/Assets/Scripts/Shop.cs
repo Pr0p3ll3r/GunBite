@@ -83,8 +83,8 @@ public class Shop : MonoBehaviour
     {
         if (playerMoney.money >= weapon.GetRefillPrice())
         {
-            weapon.Refill();
             playerMoney.TakeMoney(weapon.GetRefillPrice());
+            weapon.Refill();
             ShopSound();
             Refresh();
             hud.RefreshAmmo(wm.loadout[wm.selectedWeapon].GetClip(), wm.loadout[wm.selectedWeapon].GetAmmo());
@@ -146,12 +146,12 @@ public class Shop : MonoBehaviour
 
     void BuyOrRepairArmor()
     {
-        int remainToFullArmor = 10 - player.currentArmor;
-
-        if(playerMoney.money >= remainToFullArmor * 50)
+        int remainToFullArmor = 5 - player.currentArmor;
+        int price = remainToFullArmor * 100;
+        if (playerMoney.money >= price)
         {
-            player.currentArmor = 10;
-            playerMoney.TakeMoney(remainToFullArmor * 50);
+            player.currentArmor = 5;
+            playerMoney.TakeMoney(price);
             hud.RefreshBars(player.currentHealth, player.maxHealth, player.currentArmor);
             ShopSound();
             Refresh();
@@ -169,10 +169,10 @@ public class Shop : MonoBehaviour
         moneyText.text = $"Money: {playerMoney.money}$";
 
         //Armor
-        armor.transform.Find("Percent").GetComponent<TextMeshProUGUI>().text = $"{player.currentArmor}%";
-        int price = (10 - player.currentArmor) * 50;
+        armor.transform.Find("Percent").GetComponent<TextMeshProUGUI>().text = $"{player.currentArmor * 20}%";
+        int price = (5 - player.currentArmor) * 100;
         armor.transform.Find("ButtonBuy").GetComponent<Button>().onClick.RemoveAllListeners();
-        if (player.currentArmor == 10)
+        if (player.currentArmor == 5)
         {
             armor.transform.Find("ButtonBuy").GetComponent<Button>().interactable = false;
             armor.transform.Find("ButtonBuy/Price").GetComponent<TextMeshProUGUI>().text = "0$";

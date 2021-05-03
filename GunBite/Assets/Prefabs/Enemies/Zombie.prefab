@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 107, y: 14}
+  m_SizeDelta: {x: 105, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &725268679394810762
 CanvasRenderer:
@@ -211,7 +211,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 104, y: 11.7}
+  m_SizeDelta: {x: 105, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2872161191227759204
 GameObject:
@@ -248,7 +248,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 3, y: 2.3}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &590731657241622715
 CanvasRenderer:
@@ -280,7 +280,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: f954ddc440caa57419e70c4d3c8d8843, type: 3}
   m_FillDirection: 0
-  m_FillAmount: 1
+  m_FillAmount: 0.991
   m_FillCenter: 1
   m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3400728020969523165
@@ -440,12 +440,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7226f9551a0723d4f9375f621538c514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: Zombie
+  type: 0
   maxHealth: 100
-  damage: 1
   attackDistance: 0.5
   speed: 1
   attackCooldown: 0.5
+  size: 1
   exp: 3
   money: 4
   deathEffect: {fileID: 1285078114962862553, guid: 24d5e4f703bbc524dacad78a8587a7a0,

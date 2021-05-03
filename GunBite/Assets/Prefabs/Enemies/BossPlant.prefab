@@ -136,7 +136,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 18}
-  m_SizeDelta: {x: 300, y: 15}
+  m_SizeDelta: {x: 300, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3240832066502716556
 GameObject:
@@ -182,7 +182,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.05771005}
+  m_Offset: {x: 0.012935579, y: 0.01343596}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -193,7 +193,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.125, y: 2.2997253}
+  m_Size: {x: 1.9270092, y: 2.1574333}
   m_EdgeRadius: 0
 --- !u!1 &5671392333128979299
 GameObject:
@@ -204,7 +204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5671392333128979298}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tentacles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,7 +237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5671392333183218831}
   - component: {fileID: 5671392333183218833}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TentacleRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,9 +324,9 @@ GameObject:
   - component: {fileID: 4717433994887170444}
   - component: {fileID: 3084205445723186751}
   - component: {fileID: 5420687482047389393}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BossPlant
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -469,13 +469,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d04720c26bc1148ba5859837950932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info: {fileID: 11400000, guid: 7cab011568ff0384782436453c39ba31, type: 2}
+  type: 3
+  maxHealth: 500
+  attackDistance: 2.7
+  speed: 0
+  attackCooldown: 1
+  size: 1
+  exp: 50
+  money: 100
   deathEffect: {fileID: 1285078114962862553, guid: 24d5e4f703bbc524dacad78a8587a7a0,
     type: 3}
-  spitPoint: {fileID: 6253257941989651753}
   acidPrefab: {fileID: 7127483739802894902, guid: f35f5eb468782e046a4fddbdd937f6f9,
     type: 3}
-  radius: 1.5
+  radius: 2.4
 --- !u!1 &5671392333593020117
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,7 +492,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5671392333593020116}
   - component: {fileID: 5671392333593020118}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TentacleLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -568,7 +574,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8365677207647403067}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SpitPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -624,7 +630,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 107, y: 14}
+  m_SizeDelta: {x: 300, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6131937797152553656
 CanvasRenderer:
@@ -699,7 +705,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 3, y: 2.3}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8836652105401451428
 CanvasRenderer:

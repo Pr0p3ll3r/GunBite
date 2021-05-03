@@ -3,30 +3,26 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class BossPlant : MonoBehaviour
+public class BossPlant : ZombieInfo
 {
-    public ZombieInfo info;
-
     private Transform player;
-    public GameObject deathEffect;
     private Animator animator;
     private GameObject healthBar;
     private TextMeshProUGUI moneyReward;
     private GameObject hitbox;
 
-    public GameObject spitPoint;
+    public GameObject deathEffect;
     public GameObject acidPrefab;
-
-    public float radius;
 
     private int currentHealth;
     private float lastAttackTime = 0;
     private bool isDead;
     private bool appear;
+    public float radius;
 
     void Start()
     {
-        currentHealth = info.maxHealth;
+        currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         animator = GetComponent<Animator>();
         healthBar = transform.GetChild(0).transform.Find("HealthBar").gameObject;
@@ -41,22 +37,18 @@ public class BossPlant : MonoBehaviour
             return;
         }
 
-        if (Vector3.Distance(transform.position, player.position) <= info.attackDistance)
+        if (Vector3.Distance(transform.position, player.position) <= attackDistance)
         {
             Attack();
         }
-        else
-        {
-            Spit();
-            animator.SetBool("Attack", false);
-        }
+        Spit();
     }
 
     void Attack()
     {
-        if (Time.time - lastAttackTime >= info.attackCooldown)
+        if (Time.time - lastAttackTime >= attackCooldown)
         {
-            animator.SetBool("Attack", true);
+            animator.SetTrigger("Attack");
             lastAttackTime = Time.time;
         }
     }
@@ -80,7 +72,7 @@ public class BossPlant : MonoBehaviour
 
     void Spit()
     {
-        if (Time.time - lastAttackTime >= info.attackCooldown)
+        if (Time.time - lastAttackTime >= attackCooldown)
         {
             lastAttackTime = Time.time;
             Transform spitPoint = transform.Find("SpitPoint");
@@ -94,27 +86,33 @@ public class BossPlant : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead == false)
+        if (appear && isDead == false)
         {
             currentHealth -= damage;
             SoundManager.Instance.Play("ZombieHurt");
             SetHealthBar();
             if (currentHealth <= 0)
             {
-                isDead = true;
-                player.gameObject.GetComponent<Player>().Reward(info.exp, info.money);
-                Instantiate(deathEffect, transform.position, Quaternion.identity);
-                moneyReward.text = $"+{info.money}$";
-                moneyReward.GetComponent<Animator>().Play("FadeOut");
-                GetComponent<SpriteRenderer>().enabled = false;
-                transform.GetChild(2).gameObject.SetActive(false);
-                GetComponent<Collider2D>().enabled = false;
-                hitbox.GetComponent<Collider2D>().enabled = false;
-                if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
-                else StartCoroutine(Destroy());
+                Die();
             }
         }
     }
+
+    public void Die()
+    {
+        isDead = true;
+        player.gameObject.GetComponent<Player>().Reward(exp, money);
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        moneyReward.text = $"+{money}$";
+        moneyReward.GetComponent<Animator>().Play("FadeOut");
+        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
+        hitbox.GetComponent<Collider2D>().enabled = false;
+        transform.GetChild(2).gameObject.SetActive(false);
+        if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
+        StartCoroutine(Destroy());
+    }
+
 
     IEnumerator Destroy()
     {
@@ -125,7 +123,7 @@ public class BossPlant : MonoBehaviour
     void SetHealthBar()
     {
         healthBar.SetActive(true);
-        healthBar.GetComponentInChildren<SlicedFilledImage>().fillAmount = (float)currentHealth / info.maxHealth;
+        healthBar.GetComponentInChildren<SlicedFilledImage>().fillAmount = (float)currentHealth / maxHealth;
         if (healthBar.GetComponentInChildren<SlicedFilledImage>().fillAmount <= 0)
             healthBar.gameObject.SetActive(false);
     }

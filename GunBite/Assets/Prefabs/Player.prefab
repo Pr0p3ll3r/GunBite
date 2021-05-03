@@ -694,7 +694,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!58 &2091869437
 CircleCollider2D:
@@ -733,7 +733,6 @@ MonoBehaviour:
     nickname: NICKNAME
     level: 1
     exp: 0
-  gameManager: {fileID: 0}
   deathEffect: {fileID: 1285078114962862553, guid: 24d5e4f703bbc524dacad78a8587a7a0,
     type: 3}
   ls: {fileID: 0}
@@ -794,7 +793,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadout:
   - {fileID: 11400000, guid: f4a24d91e01acf54b82c95438f8c3a50, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: df042cc910cd17741b9972c2432f343b, type: 2}
   - {fileID: 11400000, guid: 620acef8ebca1be4ab395e9027fb4e12, type: 2}
   currentWeapon: {fileID: 0}
   weaponHolder: {fileID: 448777784789897024}
@@ -822,6 +821,8 @@ MonoBehaviour:
   upgradeUI: {fileID: 0}
   healthUpgrade: {fileID: 0}
   speedUpgrade: {fileID: 0}
+  dashPowerUpgrade: {fileID: 0}
+  dashCooldownUpgrade: {fileID: 0}
 --- !u!114 &8812785091923779324
 MonoBehaviour:
   m_ObjectHideFlags: 0

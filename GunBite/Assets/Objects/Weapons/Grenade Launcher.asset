@@ -16,11 +16,12 @@ MonoBehaviour:
   firingMode: 0
   type: 1
   prefab: {fileID: 5519566046924677910, guid: 3dc0af204c9bd9d4e8469988d35f7b17, type: 3}
-  damage: 100
+  damage: 60
   ammo: 36
   clipSize: 6
   pellets: 0
   pelletsSpread: 0
+  range: 0
   fireRate: 1
   bulletForce: 10
   bulletPrefab: {fileID: 7127483739802894902, guid: 5e7e63fe883b0c74da03a1790c642581,

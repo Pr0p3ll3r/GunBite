@@ -441,12 +441,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7226f9551a0723d4f9375f621538c514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: Spitter
+  type: 1
   maxHealth: 100
-  damage: 1
   attackDistance: 5
   speed: 1
   attackCooldown: 1
+  size: 1
   exp: 3
   money: 4
   deathEffect: {fileID: 1285078114962862553, guid: 24d5e4f703bbc524dacad78a8587a7a0,

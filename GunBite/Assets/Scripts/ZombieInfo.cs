@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum Type
@@ -5,32 +7,20 @@ public enum Type
     Normal,
     Spitter,
     Boomer,
-    BossPlant
+    BossPlant,
+    BossHead
 }
 
-[CreateAssetMenu(fileName = "New Zombie", menuName = "ScriptableObjects/Zombie")]
-public class ZombieInfo : ScriptableObject
+public class ZombieInfo : MonoBehaviour
 {
     public Type type;
 
-    [Header("Stats")]
-    public int maxHealth;
-    private int currentHealth;
-    public float attackDistance;
-    public float speed;
-    public float attackCooldown;
+    public int maxHealth = 100;
+    public float attackDistance = 5f;
+    public float speed = 5f;
+    public float attackCooldown = 2;
+    public float size = 3f;
 
-    [Header("Rewards")]
     public int exp;
     public int money;
-
-    public void Init()
-    {
-        currentHealth = maxHealth;
-    }
-
-    public int GetCurrentHealth() 
-    { 
-        return currentHealth; 
-    }
 }
