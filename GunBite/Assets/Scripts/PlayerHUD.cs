@@ -8,12 +8,12 @@ public class PlayerHUD : MonoBehaviour
 {
     private GameObject healthBar;
     private List<Image> hearts = new List<Image>();
-    public Sprite heartFull;
-    public Sprite heartEmpty;
+    [SerializeField] private Sprite heartFull;
+    [SerializeField] private Sprite heartEmpty;
     private GameObject armorBar;
     private Image[] shields;
-    public Sprite shieldFull;
-    public Sprite shieldEmpty;
+    [SerializeField] private Sprite shieldFull;
+    [SerializeField] private Sprite shieldEmpty;
     private GameObject staminaBar;
     private TextMeshProUGUI clipSize;
     private TextMeshProUGUI ammo;
@@ -23,12 +23,11 @@ public class PlayerHUD : MonoBehaviour
     private TextMeshProUGUI moneyText;
     private GameObject vignette;
     private TextMeshProUGUI deadText;
-    private GameObject primaryWeapon;
-    private GameObject secondaryWeapon;
-    private GameObject meleeWeapon;
+    private Transform weaponParent;
     public GameObject reloading;
 
-    public float fadeOutTime = 4f;
+    [SerializeField] private Sprite emptyIcon;
+    [SerializeField] private float fadeOutTime = 4f;
 
     private void Awake()
     {
@@ -51,9 +50,7 @@ public class PlayerHUD : MonoBehaviour
         moneyText = GameObject.Find("Canvas/GameHUD/Money").GetComponent<TextMeshProUGUI>();
         vignette = GameObject.Find("Canvas/GameHUD/Vignette").gameObject;
         deadText = GameObject.Find("Canvas/GameHUD/DeadText").GetComponent<TextMeshProUGUI>();
-        primaryWeapon = GameObject.Find("Canvas/GameHUD/BottomRightCorner/PrimaryWeapon").gameObject;
-        secondaryWeapon = GameObject.Find("Canvas/GameHUD/BottomRightCorner/SecondaryWeapon").gameObject;
-        meleeWeapon = GameObject.Find("Canvas/GameHUD/BottomRightCorner/MeleeWeapon").gameObject;
+        weaponParent = GameObject.Find("Canvas/GameHUD/BottomRightCorner/Weapons").transform;
         reloading.SetActive(false);
     }
 
@@ -158,53 +155,34 @@ public class PlayerHUD : MonoBehaviour
 
     public void RefreshWeapon(Weapon[] weapons)
     {
-        if (weapons[1] != null)
+        foreach (Transform weapon in weaponParent)
         {
-            Image icon = primaryWeapon.transform.GetChild(0).GetComponent<Image>();
-            TextMeshProUGUI name = primaryWeapon.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-            icon.sprite = weapons[1].icon;
-            name.text = weapons[1].name;
-            primaryWeapon.SetActive(true);
-        }      
-        else if (weapons[1] == null)
-            primaryWeapon.SetActive(false);
-
-        if (weapons[0] != null)
-        {
-            Image icon = secondaryWeapon.transform.GetChild(0).GetComponent<Image>();
-            TextMeshProUGUI name = secondaryWeapon.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-            icon.sprite = weapons[0].icon;
-            name.text = weapons[0].name;
-            secondaryWeapon.SetActive(true);
+            Image icon = weapon.GetChild(0).GetComponent<Image>();
+            TextMeshProUGUI name = weapon.GetChild(1).GetComponent<TextMeshProUGUI>();
+            icon.sprite = emptyIcon;
+            name.text = "";
         }
-        else if (weapons[0] == null)
-            secondaryWeapon.SetActive(false);
+
+        for (int i = 0; i < weapons.Length; i++)
+        {
+            if (weapons[i] == null) continue;
+
+            Image icon = weaponParent.GetChild(i).GetChild(0).GetComponent<Image>();
+            TextMeshProUGUI name = weaponParent.GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>();
+            icon.sprite = weapons[i].icon;
+            name.text = weapons[i].name;
+        }
     }
 
     public void SelectWeapon(int index)
     {
-        Image primary = primaryWeapon.GetComponent<Image>();
-        Image secondary = secondaryWeapon.GetComponent<Image>();
-        Image melee = meleeWeapon.GetComponent<Image>();
+        foreach (Transform weapon in weaponParent)
+        {
+            Image background = weapon.GetComponent<Image>();
+            background.color = new Color32(0, 0, 0, 102);
+        }
 
-        if (index == 0)
-        {
-            melee.color = new Color32(0, 0, 0, 102);
-            primary.color = new Color32(0, 0, 0, 102);
-            secondary.color = new Color32(255, 255, 255, 102);
-        }
-        else if (index == 1)
-        {
-            melee.color = new Color32(0, 0, 0, 102);
-            primary.color = new Color32(255, 255, 255, 102);
-            secondary.color = new Color32(0, 0, 0, 102);
-        }
-        else if (index == 2)
-        {
-            melee.color = new Color32(255, 255, 255, 102);
-            primary.color = new Color32(0, 0, 0, 102);
-            secondary.color = new Color32(0, 0, 0, 102);
-        }
+        weaponParent.GetChild(index).GetComponent<Image>().color = new Color32(255, 255, 255, 102);
     }
 
     public IEnumerator StaminaRestore(float cooldown)

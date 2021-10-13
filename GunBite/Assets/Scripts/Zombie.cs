@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Zombie : ZombieInfo
+public class Zombie : ZombieInfo, IDamageable
 {
     private int currentHealth;
 
@@ -102,7 +102,7 @@ public class Zombie : ZombieInfo
             }
             else
             {
-                player.GetComponent<Player>().TakeDamage();
+                player.GetComponent<Player>().TakeDamage(1);
             }
         }         
     }
@@ -158,7 +158,7 @@ public class Zombie : ZombieInfo
         {
             if (col.gameObject.tag.Equals("Player"))
             {
-                col.gameObject.transform.root.GetComponent<Player>().TakeDamage();
+                col.gameObject.transform.root.GetComponent<Player>().TakeDamage(1);
             }
         }
         Destroy(gameObject);

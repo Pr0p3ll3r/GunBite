@@ -17,7 +17,7 @@ public class Acid : MonoBehaviour
     {
         if (collision.gameObject.name.Equals("Hitbox"))
         {
-            collision.gameObject.transform.root.GetComponent<Player>().TakeDamage();
+            collision.gameObject.transform.root.GetComponent<Player>().TakeDamage(1);
         }
         Destroy(gameObject);
     }

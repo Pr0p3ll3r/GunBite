@@ -8,6 +8,7 @@ using System.Globalization;
 public class WeaponManager : MonoBehaviour
 {
     public Weapon[] loadout;
+    public ObjectPooler bulletPooler;
     public GameObject currentWeapon;
     public Transform weaponHolder;
     public int selectedWeapon = 0;
@@ -38,7 +39,7 @@ public class WeaponManager : MonoBehaviour
                 weapon.Initialize();
         }
 
-        equip = StartCoroutine(Equip(0));
+        equip = StartCoroutine(Equip(1));
         hud.RefreshWeapon(loadout);
     }
 
@@ -52,8 +53,8 @@ public class WeaponManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2) && loadout[1] != null && selectedWeapon != 1)
             equip = StartCoroutine(Equip(1));
 
-        //if (Input.GetKeyDown(KeyCode.Alpha3) && loadout[2] != null && selectedWeapon != 2 )
-        //    equip = StartCoroutine(Equip(2));
+        if (Input.GetKeyDown(KeyCode.Alpha3) && loadout[2] != null && selectedWeapon != 2 )
+            equip = StartCoroutine(Equip(2));
 
         if (currentWeapon != null)
         {
@@ -64,11 +65,11 @@ public class WeaponManager : MonoBehaviour
 
             if (!isEquipping)
             {
-                if(Input.GetKeyDown(KeyCode.E))
+                if (loadout[selectedWeapon].type == 2)
                 {
-                    if (currentCooldown <= 0)
+                    if (Input.GetMouseButtonDown(0) && currentCooldown <= 0)
                     {
-                        StartCoroutine(Attack());
+                        Attack();
                     }
                 }
                 else
@@ -170,11 +171,11 @@ public class WeaponManager : MonoBehaviour
         }
 
         //muzzle
-        SpriteRenderer muzzleFlash = currentWeapon.transform.Find("Anchor/Resources/MuzzleFlash").GetComponent<SpriteRenderer>();
+        SpriteRenderer muzzleFlash = currentWeapon.transform.Find("MuzzleFlash").GetComponent<SpriteRenderer>();
         muzzle = StartCoroutine(MuzzleFlash(muzzleFlash));
 
         //firepoint
-        Transform firePoint = currentWeapon.transform.Find("Anchor/Resources/FirePoint").transform;
+        Transform firePoint = currentWeapon.transform.Find("FirePoint").transform;
 
         //animation
         if(currentWeapon.GetComponent<Animator>() != null)
@@ -185,7 +186,7 @@ public class WeaponManager : MonoBehaviour
         {
             if (currentWeaponData.pellets == 0)
             {
-                GameObject bullet = Instantiate(currentWeaponData.bulletPrefab, firePoint.position, firePoint.rotation);
+                GameObject bullet = bulletPooler.Get(firePoint.position, firePoint.rotation);
                 bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage());
                 Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
                 rb.AddForce(firePoint.right * currentWeaponData.bulletForce, ForceMode2D.Impulse);
@@ -195,7 +196,7 @@ public class WeaponManager : MonoBehaviour
                 float maxSpread = currentWeaponData.pelletsSpread;
 
                 Vector3 direction = firePoint.right + new Vector3(Random.Range(-maxSpread, maxSpread), Random.Range(-maxSpread, maxSpread), Random.Range(-maxSpread, maxSpread));
-                GameObject bullet = Instantiate(currentWeaponData.bulletPrefab, firePoint.position, firePoint.rotation);
+                GameObject bullet = bulletPooler.Get(firePoint.position, firePoint.rotation);
                 bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage());
                 Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
                 rb.AddForce(direction * currentWeaponData.bulletForce, ForceMode2D.Impulse);
@@ -212,18 +213,8 @@ public class WeaponManager : MonoBehaviour
         currentCooldown = currentWeaponData.fireRate;
     }
 
-    IEnumerator Attack()
+    void Attack()
     {
-        Destroy(currentWeapon);
-
-        hud.SelectWeapon(2);
-
-        currentWeaponData = loadout[2];
-        GameObject newWeapon = Instantiate(loadout[2].prefab, weaponHolder) as GameObject;
-        currentWeapon = newWeapon;
-        newWeapon.transform.localPosition = loadout[2].prefab.transform.localPosition;
-        weaponPosition = newWeapon.transform.localPosition;
-
         //sfx
         sfx.clip = currentWeaponData.gunshotSound;
         sfx.volume = currentWeaponData.shotVolume;
@@ -233,28 +224,19 @@ public class WeaponManager : MonoBehaviour
         currentWeapon.GetComponent<Animator>().Play("Attack", 0, 0);
 
         //attackpoint
-        Transform attackPoint = currentWeapon.transform.Find("Anchor/Resources/AttackPoint").transform;
+        Transform attackPoint = currentWeapon.transform.Find("AttackPoint").transform;
 
         Collider2D[] enemies = Physics2D.OverlapCircleAll(attackPoint.position, currentWeaponData.range);
         foreach(Collider2D enemy in enemies)
         {
             if (enemy.gameObject.layer == LayerMask.NameToLayer("EnemyHitbox"))
             {
-                Zombie z = enemy.gameObject.transform.root.GetComponent<Zombie>();
-                BossPlant bp = enemy.gameObject.transform.root.GetComponent<BossPlant>();
-                BossHead bh = enemy.gameObject.transform.root.GetComponent<BossHead>();
-                if (z != null) z.TakeDamage(currentWeaponData.damage);
-                if (bp != null) bp.TakeDamage(currentWeaponData.damage);
-                if (bh != null) bh.TakeDamage(currentWeaponData.damage);
+                enemy.gameObject.transform.root.GetComponent<IDamageable>()?.TakeDamage(currentWeaponData.damage);
             }
         }
 
         //cooldown
         currentCooldown = currentWeaponData.fireRate;
-
-        yield return new WaitForSeconds(0.5f);
-
-        equip = StartCoroutine(Equip(selectedWeapon));
     }
 
     IEnumerator Reload()
@@ -306,7 +288,7 @@ public class WeaponManager : MonoBehaviour
 
     void OnCaseOut()
     {
-        Transform caseSpawnPoint = currentWeapon.transform.Find("Anchor/Resources/CaseSpawn");
+        Transform caseSpawnPoint = currentWeapon.transform.Find("CaseSpawn");
 
         if (caseSpawnPoint == null) return;
 

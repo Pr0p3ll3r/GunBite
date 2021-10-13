@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class BossPlant : ZombieInfo
+public class BossPlant : ZombieInfo, IDamageable
 {
     private Transform player;
     private Animator animator;
@@ -60,7 +60,7 @@ public class BossPlant : ZombieInfo
         {
             if (col.gameObject.tag.Equals("Player"))
             {
-                col.gameObject.transform.root.GetComponent<Player>().TakeDamage();
+                col.gameObject.transform.root.GetComponent<Player>().TakeDamage(1);
             }
         }
     }

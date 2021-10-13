@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     public static Player Instance;
 
@@ -38,12 +38,12 @@ public class Player : MonoBehaviour
         #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.T))
         {
-            TakeDamage();
+            TakeDamage(1);
         }
         #endif
     }
 
-    public void TakeDamage()
+    public void TakeDamage(int damage)
     {
         if (isDead == false && invincible == false)
         {

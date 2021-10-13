@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class BossHead : ZombieInfo
+public class BossHead : ZombieInfo, IDamageable
 {
     private Transform player;
     public GameObject deathEffect;
@@ -65,7 +65,7 @@ public class BossHead : ZombieInfo
             animator.SetBool("Attack", true);
             lastAttackTime = Time.time;
 
-            player.GetComponent<Player>().TakeDamage();
+            player.GetComponent<Player>().TakeDamage(1);
         }
     }
 

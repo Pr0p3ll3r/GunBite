@@ -1,19 +1,21 @@
 ﻿using System;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviour, IPooledObject
 {
-    public float lifeTime;
-    public GameObject explosion;
-    public float radius = 10f;
+    [SerializeField] private float lifeTime;
+    [SerializeField] private GameObject explosion;
+    [SerializeField] private float radius = 10f;
 
     private int damage;
     private Vector3 mousePos;
-    bool isGrenade;
+    private bool isGrenade;
+
+    public ObjectPooler Pool { get; set; }
 
     private void Start()
     {
-        Destroy(gameObject, lifeTime);
+        //Destroy(gameObject, lifeTime);
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (gameObject.tag.Equals("Grenade")) isGrenade = true;
     }
@@ -27,19 +29,13 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("Enemy") && !isGrenade)
         {
-            Zombie z = collision.gameObject.transform.root.GetComponent<Zombie>();
-            BossPlant bp = collision.gameObject.transform.root.GetComponent<BossPlant>();
-            BossHead bh = collision.gameObject.transform.root.GetComponent<BossHead>();
-            if (z != null) z.TakeDamage(damage);
-            if (bp != null) bp.TakeDamage(damage);
-            if (bh != null) bh.TakeDamage(damage);
-            Destroy(gameObject);
+            collision.gameObject.transform.root.GetComponent<IDamageable>()?.TakeDamage(damage);
         }
         else if (collision.gameObject.tag.Equals("Enemy") && isGrenade)
         {
             Detonate();
         }
-        else Destroy(gameObject);
+        Pool.ReturnToPool(gameObject);
     }
 
     private void Update()
@@ -73,15 +69,10 @@ public class Bullet : MonoBehaviour
 
                 if (damagePercent < 0.95) damageToApply = (int)(damageToApply * damagePercent);
                 //Debug.Log("Damage: " + damageToApply);
-                Zombie z = col.gameObject.transform.root.GetComponent<Zombie>();
-                BossPlant bp = col.gameObject.transform.root.GetComponent<BossPlant>();
-                BossHead bh = col.gameObject.transform.root.GetComponent<BossHead>();
-                if (z != null) z.TakeDamage(damageToApply);
-                if (bp != null) bp.TakeDamage(damageToApply);
-                if (bh != null) bh.TakeDamage(damageToApply);
+                col.gameObject.transform.root.GetComponent<IDamageable>()?.TakeDamage(damageToApply);
             }
         }
-        Destroy(gameObject);
+        Pool.ReturnToPool(gameObject);
     }
 
     private void OnDrawGizmos()
