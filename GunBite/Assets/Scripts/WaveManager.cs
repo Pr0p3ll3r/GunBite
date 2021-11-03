@@ -70,7 +70,7 @@ public class WaveManager : MonoBehaviour
 		currentMoney = startMoney;
 		zombieQuantity = GameObject.Find("GameHUD/ZombieQuantity/Quantity").GetComponent<TextMeshProUGUI>();
 		wave = GameObject.Find("GameHUD/Wave/Number").GetComponent<TextMeshProUGUI>();
-		wave.text = $"{currentWave}/{waves.Length}";
+		wave.text = $"{currentWave}/?";
 	}
 
 	void Update()
@@ -153,36 +153,36 @@ public class WaveManager : MonoBehaviour
 
 		state = SpawnState.SHOPTIME;
 
-		if(currentWave >= waves.Length)
-        {
-			gm.Gameover();
-			yield break;
-        }
+		if (Player.Instance.GetComponent<LevelSystem>().TimeToUpgrade())
+		{
+			yield return new WaitUntil(() => GameManager.Instance.isShopTime = true);
+		}
 		else
-        {
-			if (Player.Instance.GetComponent<LevelSystem>().TimeToUpgrade())
-			{
-				yield return new WaitUntil(() => GameManager.Instance.isShopTime = true);
-			}
-			else
-			{
-				GameManager.Instance.isShopTime = true;
-				Shop.Instance.shopText.text = "Press F to open the Shop";
-			}		
+		{
+			GameManager.Instance.isShopTime = true;
+			Shop.Instance.shopText.text = "Press F to open the Shop";
 		}
 
-		while(gm.isShopTime)
+		while (gm.isShopTime)
 		{
 			yield return null;
 		} 
 		
 		if(!gm.isShopTime)
         {
-			currentWave++;
+			if (currentWave >= waves.Length)
+			{
+				currentWave = 0;
+			}
+			else
+            {
+				currentWave++;
+			}
+
 			state = SpawnState.COUNTING;
 			Shop.Instance.shopText.text = "";
 			Shop.Instance.CloseShop();
-			wave.text = $"{currentWave}/{waves.Length}";
+			wave.text = $"{currentWave}/?";
 			gm.shopTime = 15;
 			UpgradeEnemy();
 			Player.Instance.RefillHealth();

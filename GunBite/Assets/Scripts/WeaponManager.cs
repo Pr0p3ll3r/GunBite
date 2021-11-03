@@ -100,6 +100,8 @@ public class WeaponManager : MonoBehaviour
                     }
 
                     if (Input.GetKeyDown(KeyCode.R)) if (currentWeaponData.OutOfAmmo() && isReloading == false) reload = StartCoroutine(Reload());
+
+                    if (Input.GetKeyDown(KeyCode.E)) StartCoroutine(QuickAttack());
                 }              
             }
         }
@@ -313,9 +315,10 @@ public class WeaponManager : MonoBehaviour
         muzzle.enabled = false;
     }
 
-    public void SwitchToSecondary()
+    IEnumerator QuickAttack()
     {
-        selectedWeapon = 0;
+        int prevWeapon = selectedWeapon;
+        selectedWeapon = 2;
         currentWeaponData = loadout[selectedWeapon];
 
         if (currentWeapon != null)
@@ -327,9 +330,9 @@ public class WeaponManager : MonoBehaviour
             Destroy(currentWeapon);
         }
 
-        GameObject newWeapon = Instantiate(loadout[0].prefab, weaponHolder) as GameObject;
+        GameObject newWeapon = Instantiate(loadout[2].prefab, weaponHolder) as GameObject;
         currentWeapon = newWeapon;
-        newWeapon.transform.localPosition = loadout[0].prefab.transform.localPosition;
+        newWeapon.transform.localPosition = loadout[2].prefab.transform.localPosition;
         weaponPosition = newWeapon.transform.localPosition;
 
         hud.RefreshAmmo(currentWeaponData.GetClip(), currentWeaponData.GetAmmo());
@@ -337,6 +340,12 @@ public class WeaponManager : MonoBehaviour
         hud.SelectWeapon(selectedWeapon);
 
         isEquipping = false;
+
+        Attack();
+
+        yield return new WaitForSeconds(currentCooldown);
+
+        equip = StartCoroutine(Equip(prevWeapon));
     }
 
     IEnumerator Burst()

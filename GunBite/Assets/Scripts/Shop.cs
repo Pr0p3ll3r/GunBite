@@ -121,7 +121,7 @@ public class Shop : MonoBehaviour
     {
         playerMoney.money += weapon.GetSellPrice();
         wm.loadout[weapon.type] = null;
-        wm.SwitchToSecondary();
+        wm.StartCoroutine("Equip", 1);
         ShopSound();
         Refresh();
         hud.RefreshWeapon(wm.loadout);

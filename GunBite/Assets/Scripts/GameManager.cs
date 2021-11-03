@@ -6,19 +6,26 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
 
     public bool isShopTime = false;
     public int shopTime = 30;
 
-    public float startTimestamp = 0;
+    [SerializeField] private float startTimestamp = 0;
 
     private TextMeshProUGUI timer;
     private TextMeshProUGUI shopTimer;
     private int currentGameTime;
     private Coroutine timerCoroutine;
-    private GameObject endGame;
-    public GameObject wonEffect;
+    private GameObject gameOver;
+    [SerializeField] private GameObject wonEffect;
+
+    [SerializeField] private TextMeshProUGUI timeSurvivedText;
+    [SerializeField] private TextMeshProUGUI timeSurvivedScoreText;
+    [SerializeField] private TextMeshProUGUI zombieKilledText;
+    [SerializeField] private TextMeshProUGUI zombieKilledScoreText;
+    [SerializeField] private TextMeshProUGUI currentScoreText;
+    [SerializeField] private TextMeshProUGUI highScoreText;
 
     [HideInInspector] public WaveManager waveManager;
 
@@ -36,7 +43,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        endGame = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;
+        gameOver = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;
         timer = GameObject.Find("GameHUD/Timer/Time").GetComponent<TextMeshProUGUI>();
         shopTimer = GameObject.Find("Canvas").transform.Find("ShopUI/INFO/Text").GetComponent<TextMeshProUGUI>();
         waveManager = GetComponent<WaveManager>();
@@ -90,15 +97,16 @@ public class GameManager : MonoBehaviour
 
         if (timerCoroutine != null) StopCoroutine(timerCoroutine);
 
-        if (!Player.Instance.isDead)
-        {
-            Player.Instance.ls.GetExp(100);
-            Player.Instance.Control(false);
-            endGame.SetActive(true);
-            Instantiate(wonEffect, Vector3.zero, wonEffect.transform.rotation);
-        }
+        //end game // won game
+        //if (!Player.Instance.isDead)
+        //{
+        //    Player.Instance.ls.GetExp(100);
+        //    Player.Instance.Control(false);
+        //    gameOver.SetActive(true);
+        //    Instantiate(wonEffect, Vector3.zero, wonEffect.transform.rotation);
+        //}
             
-        StartCoroutine(Wait(5f));
+        StartCoroutine(Wait(3f));
     }
 
     private void InitializeTimer()
@@ -111,9 +119,11 @@ public class GameManager : MonoBehaviour
 
     private void RefreshTimerUI()
     {
-        string minutes = (currentGameTime / 60).ToString("00");
-        string seconds = (currentGameTime % 60).ToString("00");
-        timer.text = $"{minutes}:{seconds}";
+        string hours = (currentGameTime / 3600).ToString("00");
+        int m = currentGameTime % 3600;
+        string minutes = (m / 60).ToString("00");
+        string seconds = (m % 60).ToString("00");
+        timer.text = $"{hours}:{minutes}:{seconds}";
 
         string minutesShop = (shopTime / 60).ToString("00");
         string secondsShop = (shopTime % 60).ToString("00");
@@ -124,11 +134,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
 
-        #if UNITY_EDITOR
-            LevelLoader.Instance.LoadScene(1);
-        #else
-            LevelLoader.Instance.LoadScene(0);
-        #endif
+        gameOver.SetActive(true);
     }
 
     private IEnumerator Timer()
@@ -149,5 +155,31 @@ public class GameManager : MonoBehaviour
     {
         if (status) timerCoroutine = StartCoroutine(Timer());
         else StopCoroutine(timerCoroutine);
+    }
+
+    public void SetGameOverScreen(int zombieKilled)
+    {
+        string hours = (currentGameTime / 3600).ToString("00");
+        int m = currentGameTime % 3600;
+        string minutes = (m / 60).ToString("00");
+        string seconds = (m % 60).ToString("00");
+        timeSurvivedText.text = $"{hours}:{minutes}:{seconds}";
+        timeSurvivedScoreText.text = $"+{currentGameTime}";
+
+        zombieKilledText.text = zombieKilled.ToString();
+        int zombieScore = 10 * zombieKilled;
+        zombieKilledScoreText.text = $"+{zombieScore}";
+
+        int totalScore = zombieScore + currentGameTime;
+        currentScoreText.text = totalScore.ToString();
+
+        int highScore = PlayerPrefs.GetInt("HighScore", 0);
+        highScoreText.text = highScore.ToString();
+
+        if (totalScore > highScore)
+        {
+            PlayerPrefs.SetInt("HighScore", totalScore);
+            highScoreText.text = totalScore.ToString();
+        }
     }
 }

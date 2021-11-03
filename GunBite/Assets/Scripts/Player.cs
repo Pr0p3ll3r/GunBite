@@ -2,7 +2,7 @@
 
 public class Player : MonoBehaviour, IDamageable
 {
-    public static Player Instance;
+    public static Player Instance { get; private set; }
 
     public int maxHealth = 3;
     public int currentHealth;
@@ -12,9 +12,11 @@ public class Player : MonoBehaviour, IDamageable
     public ProfileData playerProfile;
     public GameObject deathEffect;
     private PlayerHUD hud;
-    [HideInInspector] public LevelSystem ls;
+    private LevelSystem ls;
     private MoneySystem ms;
     private Animator animator;
+
+    private int zombieKilled = 0;
 
     private void Awake()
     {
@@ -80,6 +82,7 @@ public class Player : MonoBehaviour, IDamageable
         isDead = true;
         Instantiate(deathEffect, transform.position, Quaternion.identity);
         hud.ShowDeadText();
+        GameManager.Instance.SetGameOverScreen(zombieKilled);
         GameManager.Instance.Gameover();
         Destroy(gameObject);
     }
@@ -88,6 +91,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         ls.GetExp(exp);
         ms.GetMoney(money);
+        zombieKilled++;
     }
 
     public void RefillHealth()
