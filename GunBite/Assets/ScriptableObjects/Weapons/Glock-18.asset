@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Glock-18
   firingMode: 0
-  type: 0
+  type: 1
   prefab: {fileID: 4457205759843177867, guid: 7a4e2d5fca757474c8b66ad43975d689, type: 3}
   damage: 25
   ammo: 150

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Uzi
   firingMode: 1
-  type: 1
+  type: 0
   prefab: {fileID: 5519566046924677910, guid: 8bcf57c51f3118f4b97bbdd805f4cb61, type: 3}
   damage: 20
   ammo: 300

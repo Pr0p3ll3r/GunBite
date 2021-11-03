@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: AK-47
   firingMode: 1
-  type: 1
+  type: 0
   prefab: {fileID: 5519566046924677910, guid: fb860b7b8049b6f40bbd390d792031c1, type: 3}
   damage: 25
   ammo: 300

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Sniper Rifle
   firingMode: 0
-  type: 1
+  type: 0
   prefab: {fileID: 8374691739552003825, guid: f04194effd30f934e9f1b6d2f4e03cef, type: 3}
   damage: 75
   ammo: 80

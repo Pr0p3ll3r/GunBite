@@ -106,7 +106,7 @@ public class Shop : MonoBehaviour
         if (playerMoney.money >= weapon.startPrice)
         {
             playerMoney.TakeMoney(weapon.startPrice);
-            wm.loadout[1] = weapon;
+            wm.loadout[weapon.type] = weapon;
             ShopSound();
             hud.RefreshWeapon(wm.loadout);
             Refresh();

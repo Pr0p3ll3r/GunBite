@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Grenade Launcher
   firingMode: 0
-  type: 1
+  type: 0
   prefab: {fileID: 5519566046924677910, guid: 3dc0af204c9bd9d4e8469988d35f7b17, type: 3}
   damage: 60
   ammo: 36

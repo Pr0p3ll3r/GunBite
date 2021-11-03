@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: M4
   firingMode: 2
-  type: 1
+  type: 0
   prefab: {fileID: 5682462741204980137, guid: 3c0e6ae3dbeee264ea2197a753f22d97, type: 3}
   damage: 35
   ammo: 400
