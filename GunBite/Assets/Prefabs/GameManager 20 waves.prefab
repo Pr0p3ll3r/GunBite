@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2076239909300117824}
   - component: {fileID: 2076239909300117826}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameManager 20 waves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

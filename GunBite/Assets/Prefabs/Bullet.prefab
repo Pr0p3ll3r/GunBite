@@ -144,7 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e277e8be44dc349959029669a09511, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeTime: 5
-  explosion: {fileID: 8950624839484268180, guid: 45ce85b82008be84287f2c7e5bf07647,
+  explosionPrefab: {fileID: 8950624839484268180, guid: 45ce85b82008be84287f2c7e5bf07647,
     type: 3}
   radius: 1.5

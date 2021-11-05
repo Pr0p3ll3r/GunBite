@@ -1,16 +1,21 @@
 using System;
 using UnityEngine;
 
-public class Acid : MonoBehaviour
+public class Acid : MonoBehaviour, IPooledObject
 {
-    public float lifeTime;
+    public ObjectPooler Pool { get; set; }
+    //public float lifeTime;
     public float forcePower = 10f;
+
+    private void OnEnable()
+    {
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.AddForce(transform.right * forcePower, ForceMode2D.Impulse);
+    }
 
     private void Start()
     {
-        Destroy(gameObject, lifeTime);
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        rb.AddForce(transform.right * forcePower, ForceMode2D.Impulse);
+        //Destroy(gameObject, lifeTime);       
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -19,11 +24,11 @@ public class Acid : MonoBehaviour
         {
             collision.gameObject.transform.root.GetComponent<Player>().TakeDamage(1);
         }
-        Destroy(gameObject);
+        Pool.ReturnToPool(gameObject);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Destroy(gameObject);
+        Pool.ReturnToPool(gameObject);
     }
 }

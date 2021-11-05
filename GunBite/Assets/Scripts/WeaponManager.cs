@@ -186,21 +186,26 @@ public class WeaponManager : MonoBehaviour
 
         for (int i = 0; i < Mathf.Max(1, currentWeaponData.pellets); i++)
         {
+            GameObject bullet = bulletPooler.Get();
+            if (currentWeaponData.name.Contains("Grenade"))
+                bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage(), true);
+            else
+                bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage(), false);
+            bullet.transform.position = firePoint.position;
+            bullet.transform.rotation = firePoint.rotation;
+            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+            rb.velocity = Vector2.zero;
+            bullet.SetActive(true);
+
             if (currentWeaponData.pellets == 0)
-            {
-                GameObject bullet = bulletPooler.Get(firePoint.position, firePoint.rotation);
-                bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage());
-                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+            {              
                 rb.AddForce(firePoint.right * currentWeaponData.bulletForce, ForceMode2D.Impulse);
             }
             else
             {
                 float maxSpread = currentWeaponData.pelletsSpread;
 
-                Vector3 direction = firePoint.right + new Vector3(Random.Range(-maxSpread, maxSpread), Random.Range(-maxSpread, maxSpread), Random.Range(-maxSpread, maxSpread));
-                GameObject bullet = bulletPooler.Get(firePoint.position, firePoint.rotation);
-                bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage());
-                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+                Vector3 direction = firePoint.right + new Vector3(Random.Range(-maxSpread, maxSpread), Random.Range(-maxSpread, maxSpread), Random.Range(-maxSpread, maxSpread));              
                 rb.AddForce(direction * currentWeaponData.bulletForce, ForceMode2D.Impulse);
             }
         }

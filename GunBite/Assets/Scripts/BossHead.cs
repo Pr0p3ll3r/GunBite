@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class BossHead : ZombieInfo, IDamageable
 {
-    private Transform player;
-    public GameObject deathEffect;
+    [SerializeField] private ParticleSystem deathEffect;
+
+    private Transform player;    
     private Animator animator;
     private GameObject healthBar;
     private TextMeshProUGUI moneyReward;
@@ -80,7 +81,7 @@ public class BossHead : ZombieInfo, IDamageable
             {
                 isDead = true;
                 player.gameObject.GetComponent<Player>().Reward(exp, money);
-                Instantiate(deathEffect, transform.position, Quaternion.identity);
+                deathEffect.Play();
                 moneyReward.text = $"+{money}$";
                 moneyReward.GetComponent<Animator>().Play("FadeOut");
                 GetComponent<SpriteRenderer>().enabled = false;
@@ -88,7 +89,7 @@ public class BossHead : ZombieInfo, IDamageable
                 hitbox.GetComponent<Collider2D>().enabled = false;
                 if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
                 Multiply();
-                StartCoroutine(Destroy());
+                StartCoroutine(Destroy(deathEffect.main.duration));
             }
         }
     }
@@ -137,9 +138,9 @@ public class BossHead : ZombieInfo, IDamageable
         }
     }
 
-    IEnumerator Destroy()
+    IEnumerator Destroy(float time)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(time);
         Destroy(gameObject);
     }
 

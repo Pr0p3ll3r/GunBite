@@ -99,7 +99,7 @@ public class Shop : MonoBehaviour
     {
         if(wm.loadout[weapon.type] != null)
         {
-            PrintWarning("You need to sell your weapon first!");
+            PrintWarning("You can have only one primary weapon");
             return;
         }
 

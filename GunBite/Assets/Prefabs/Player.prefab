@@ -709,7 +709,7 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.007773161, y: -0.34201133}
+  m_Offset: {x: 0, y: -0.35}
   serializedVersion: 2
   m_Radius: 0.25
 --- !u!114 &6735176299896180422
@@ -735,7 +735,6 @@ MonoBehaviour:
     exp: 0
   deathEffect: {fileID: 1285078114962862553, guid: 24d5e4f703bbc524dacad78a8587a7a0,
     type: 3}
-  ls: {fileID: 0}
 --- !u!114 &7570791626626786597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -778,6 +777,7 @@ MonoBehaviour:
   shieldEmpty: {fileID: -7947067082740497745, guid: fae0ca5926ad42343a9256b60bea6d1f,
     type: 3}
   reloading: {fileID: 1990140478}
+  emptyIcon: {fileID: 21300000, guid: f921ec27877822349b946a758069e148, type: 3}
   fadeOutTime: 4
 --- !u!114 &3416179184709673178
 MonoBehaviour:
@@ -792,9 +792,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadout:
+  - {fileID: 0}
   - {fileID: 11400000, guid: f4a24d91e01acf54b82c95438f8c3a50, type: 2}
-  - {fileID: 11400000, guid: df042cc910cd17741b9972c2432f343b, type: 2}
   - {fileID: 11400000, guid: 620acef8ebca1be4ab395e9027fb4e12, type: 2}
+  bulletPooler: {fileID: 0}
   currentWeapon: {fileID: 0}
   weaponHolder: {fileID: 448777784789897024}
   selectedWeapon: 0

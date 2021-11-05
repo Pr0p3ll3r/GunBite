@@ -31,7 +31,7 @@ public class WaveManager : MonoBehaviour
 
 	[Header("Spawn Management")]
 	public Wave[] waves;
-	private int currentWave = 1;
+	private int currentWave = 11;
 	public Transform[] spawnPoints;
 	public Transform[] spawnPointsBossPlant;
 	public GameObject bigHeadPrefab;
@@ -58,6 +58,7 @@ public class WaveManager : MonoBehaviour
 
 	private int currentZombies;
 	private float makeSound;
+	private int currentWaveUI = 1;
 
 	private SpawnState state = SpawnState.COUNTING;
 
@@ -70,7 +71,7 @@ public class WaveManager : MonoBehaviour
 		currentMoney = startMoney;
 		zombieQuantity = GameObject.Find("GameHUD/ZombieQuantity/Quantity").GetComponent<TextMeshProUGUI>();
 		wave = GameObject.Find("GameHUD/Wave/Number").GetComponent<TextMeshProUGUI>();
-		wave.text = $"{currentWave}/?";
+		wave.text = $"{currentWaveUI}/?";
 	}
 
 	void Update()
@@ -112,10 +113,10 @@ public class WaveManager : MonoBehaviour
 		
 		if(_wave.boss)
         {
-			switch(_wave.name)
+			SoundManager.Instance.Play("BossApear");
+			switch (_wave.name)
             {
 				case "BossPlant":
-					SoundManager.Instance.Play("BossApear");
 					foreach (Transform spawnPoint in spawnPointsBossPlant)
 					{
 						Instantiate(_wave.enemies[0].prefab, spawnPoint.position, spawnPoint.rotation);
@@ -172,17 +173,18 @@ public class WaveManager : MonoBehaviour
         {
 			if (currentWave >= waves.Length)
 			{
-				currentWave = 0;
+				currentWave = waves.Length - 1;
 			}
 			else
             {
 				currentWave++;
 			}
 
+			currentWaveUI++;
 			state = SpawnState.COUNTING;
 			Shop.Instance.shopText.text = "";
 			Shop.Instance.CloseShop();
-			wave.text = $"{currentWave}/?";
+			wave.text = $"{currentWaveUI}/?";
 			gm.shopTime = 15;
 			UpgradeEnemy();
 			Player.Instance.RefillHealth();

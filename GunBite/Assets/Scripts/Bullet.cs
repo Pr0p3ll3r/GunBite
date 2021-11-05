@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour, IPooledObject
 {
-    [SerializeField] private float lifeTime;
-    [SerializeField] private GameObject explosion;
+    //[SerializeField] private float lifeTime;
+    [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private float radius = 10f;
 
     private int damage;
@@ -16,13 +16,18 @@ public class Bullet : MonoBehaviour, IPooledObject
     private void Start()
     {
         //Destroy(gameObject, lifeTime);
-        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (gameObject.tag.Equals("Grenade")) isGrenade = true;
+           
     }
 
-    public void SetDamage(int amount)
+    public void SetDamage(int amount, bool grenade)
     {
         damage = amount;
+        if (grenade)
+        {
+            isGrenade = true;
+            mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        } 
+        else isGrenade = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -47,14 +52,15 @@ public class Bullet : MonoBehaviour, IPooledObject
             if (transform.position == mousePos)
             {
                 Detonate();
+                Pool.ReturnToPool(gameObject);
             }
         }
     }
 
     private void Detonate()
     {
-        Debug.Log("Explosion");
-        Instantiate(explosion, transform.position, Quaternion.identity);
+        //Debug.Log("Explosion");
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         SoundManager.Instance.PlayOneShot("Explosion");
         Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, radius);
         foreach (Collider2D col in objectsInRange)
@@ -72,12 +78,11 @@ public class Bullet : MonoBehaviour, IPooledObject
                 col.gameObject.transform.root.GetComponent<IDamageable>()?.TakeDamage(damageToApply);
             }
         }
-        Pool.ReturnToPool(gameObject);
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position, radius);
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawSphere(transform.position, radius);
+    //}
 }

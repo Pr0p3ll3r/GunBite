@@ -11,15 +11,17 @@ public class BossPlant : ZombieInfo, IDamageable
     private TextMeshProUGUI moneyReward;
     private GameObject hitbox;
 
-    public GameObject deathEffect;
-    public GameObject acidPrefab;
+    [SerializeField] private ParticleSystem deathEffect;
+
+    [SerializeField] private Transform spitPoint;
+    [SerializeField] private GameObject acidPrefab;
+    [SerializeField] private float radius;
 
     private int currentHealth;
     private float lastAttackTime = 0;
     private bool isDead;
     private bool appear;
-    public float radius;
-
+   
     void Start()
     {
         currentHealth = maxHealth;
@@ -75,7 +77,6 @@ public class BossPlant : ZombieInfo, IDamageable
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             lastAttackTime = Time.time;
-            Transform spitPoint = transform.Find("SpitPoint");
 
             Vector2 direction = (player.position - transform.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -102,7 +103,7 @@ public class BossPlant : ZombieInfo, IDamageable
     {
         isDead = true;
         player.gameObject.GetComponent<Player>().Reward(exp, money);
-        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        deathEffect.Play();
         moneyReward.text = $"+{money}$";
         moneyReward.GetComponent<Animator>().Play("FadeOut");
         GetComponent<SpriteRenderer>().enabled = false;
@@ -110,13 +111,12 @@ public class BossPlant : ZombieInfo, IDamageable
         hitbox.GetComponent<Collider2D>().enabled = false;
         transform.GetChild(2).gameObject.SetActive(false);
         if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
-        StartCoroutine(Destroy());
+        StartCoroutine(Destroy(deathEffect.main.duration));
     }
 
-
-    IEnumerator Destroy()
+    IEnumerator Destroy(float time)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(time);
         Destroy(gameObject);
     }
 

@@ -39,7 +39,7 @@ MonoBehaviour:
   insertTime: 0.6
   canBeSold: 1
   canBeUpgraded: 1
-  startPrice: 500
+  startPrice: 250
   upgradePrices: 96000000c8000000fa0000002c0100005e010000
   damageMultiplier: 1.2
   icon: {fileID: 21300000, guid: 7dabeb77268728d4eae7b9221a75cbfc, type: 3}

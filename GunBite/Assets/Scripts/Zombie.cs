@@ -8,7 +8,7 @@ public class Zombie : ZombieInfo, IDamageable
     private int currentHealth;
 
     private Transform player;
-    public GameObject deathEffect;
+    [SerializeField] private ParticleSystem deathEffect;
     private Animator animator;
     private GameObject healthBar;
     private TextMeshProUGUI moneyReward;
@@ -16,18 +16,18 @@ public class Zombie : ZombieInfo, IDamageable
     private GameObject hitbox;
     private Rigidbody2D rb;
 
-    public GameObject spitPoint;
-    public GameObject acidPrefab;
+    [SerializeField] private Transform spitPoint;
+    private ObjectPooler acidPooler;
 
-    public GameObject explodeEffect;
-    public int explosionDamage;
-    public float radius;
+    [SerializeField] private ParticleSystem explodeEffect;
+    [SerializeField] private float radius;
 
     private float lastAttackTime = 0;
     private bool isDead;
 
     void Start()
     {
+        acidPooler = GameManager.Instance.acidPooler;
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         animator = GetComponent<Animator>();
@@ -93,12 +93,13 @@ public class Zombie : ZombieInfo, IDamageable
 
             if (type == Type.Spitter)
             {
-                Transform spitPoint = transform.Find("SpitPoint");
-
                 Vector2 direction = (player.position - transform.position).normalized;
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-                Instantiate(acidPrefab, spitPoint.position, Quaternion.Euler(new Vector3(0, 0, angle)));
+                GameObject acid = acidPooler.Get();
+                acid.transform.position = spitPoint.position;
+                acid.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+                acid.SetActive(true);
             }
             else
             {
@@ -125,7 +126,6 @@ public class Zombie : ZombieInfo, IDamageable
     {
         isDead = true;
         player.gameObject.GetComponent<Player>().Reward(exp, money);
-        Instantiate(deathEffect, transform.position, Quaternion.identity);
         moneyReward.text = $"+{money}$";
         moneyReward.GetComponent<Animator>().Play("FadeOut");
         GetComponent<SpriteRenderer>().enabled = false;
@@ -133,12 +133,16 @@ public class Zombie : ZombieInfo, IDamageable
         hitbox.GetComponent<Collider2D>().enabled = false;
         if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
         if (type == Type.Boomer) Explode();
-        else StartCoroutine(Destroy());
+        else
+        {
+            deathEffect.Play();
+            StartCoroutine(Destroy(deathEffect.main.duration));
+        }
     }
 
-    IEnumerator Destroy()
+    IEnumerator Destroy(float time)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(time);
         Destroy(gameObject);
     }
 
@@ -152,7 +156,7 @@ public class Zombie : ZombieInfo, IDamageable
 
     void Explode()
     {
-        Instantiate(explodeEffect, transform.position, Quaternion.identity);
+        explodeEffect.Play();
         Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, radius);
         foreach (Collider2D col in objectsInRange)
         {
@@ -161,6 +165,11 @@ public class Zombie : ZombieInfo, IDamageable
                 col.gameObject.transform.root.GetComponent<Player>().TakeDamage(1);
             }
         }
-        Destroy(gameObject);
+        StartCoroutine(Destroy(explodeEffect.main.duration));
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawSphere(transform.position, radius);
+    //}
 }

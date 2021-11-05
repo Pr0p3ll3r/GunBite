@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     private bool started = false;
     private bool shopOpened = false;
 
+    public ObjectPooler acidPooler;
+
     private void Awake()
     {
         if (Instance == null)
