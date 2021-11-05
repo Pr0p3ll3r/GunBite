@@ -31,7 +31,7 @@ public class WaveManager : MonoBehaviour
 
 	[Header("Spawn Management")]
 	public Wave[] waves;
-	private int currentWave = 11;
+	private int currentWave = 1;
 	public Transform[] spawnPoints;
 	public Transform[] spawnPointsBossPlant;
 	public GameObject bigHeadPrefab;
