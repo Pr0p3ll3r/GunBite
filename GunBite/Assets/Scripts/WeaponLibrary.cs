@@ -20,20 +20,9 @@ public class WeaponLibrary : MonoBehaviour
     {
         foreach (Weapon weapon in weapons)
         {
-            if (weapon.name.Equals(name)) return weapon;
+            if (weapon.itemName.Equals(name)) return weapon;
         }
 
         return weapons[0];
-    }
-
-    public static int GetIndex(string name)
-    {
-        for (int i = 0; i < weapons.Length; i++)
-        {
-            if (weapons[i].name == name)
-                return i;
-        }
-
-        return -1;
     }
 }

@@ -75,6 +75,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -84,11 +85,11 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -394,6 +395,18 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Boss Plant-Sheet 1_3: -3434536753583278905
+      Boss Plant-Sheet 1_0: -8081104652941501868
+      Boss Plant-Sheet 1_1: 7173368548975852580
+      Boss Plant-Sheet 1_6: 4039438088960428121
+      Boss Plant-Sheet 1_5: -3529636992392001208
+      Boss Plant-Sheet 1_10: -7175625825804129525
+      Boss Plant-Sheet 1_2: 2987876527974337682
+      Boss Plant-Sheet 1_14: -7280208834853260737
+      Boss Plant-Sheet 1_16: -897801503595528299
+      Boss Plant-Sheet 1_12: 5506445735392040497
+      Boss Plant-Sheet 1_8: -4653857968019720560
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

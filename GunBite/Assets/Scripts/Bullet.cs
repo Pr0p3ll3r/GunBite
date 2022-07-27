@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour, IPooledObject
 {
-    //[SerializeField] private float lifeTime;
     [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private float radius = 10f;
 
@@ -12,12 +11,6 @@ public class Bullet : MonoBehaviour, IPooledObject
     private bool isGrenade;
 
     public ObjectPooler Pool { get; set; }
-
-    private void Start()
-    {
-        //Destroy(gameObject, lifeTime);
-           
-    }
 
     public void SetDamage(int amount, bool grenade)
     {

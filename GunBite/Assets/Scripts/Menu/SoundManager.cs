@@ -17,7 +17,7 @@ public class Sound
 
 public class SoundManager : MonoBehaviour
 {
-    public Sound[] sounds;
+    [SerializeField] private Sound[] sounds;
     public static SoundManager Instance;
 
     void Awake()
@@ -56,7 +56,7 @@ public class SoundManager : MonoBehaviour
         Sound s = FindSound(name);
         if (s == null)
         {
-            Debug.LogWarning("Sound" + name + "not found!");
+            Debug.LogWarning("Sound " + name + " not found!");
             return;
         }
         s.audioSource.Play();
@@ -67,7 +67,7 @@ public class SoundManager : MonoBehaviour
         Sound s = FindSound(name);
         if (s == null)
         {
-            Debug.LogWarning("Sound" + name + "not found!");
+            Debug.LogWarning("Sound " + name + " not found!");
             return;
         }
         s.audioSource.PlayOneShot(s.clip);

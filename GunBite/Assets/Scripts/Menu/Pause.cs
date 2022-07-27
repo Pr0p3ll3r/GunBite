@@ -5,8 +5,8 @@ public class Pause : MonoBehaviour, IPointerEnterHandler
 {
     public static bool paused = false;
 
-    public GameObject pauseMenu;
-    public GameObject optionsMenu;
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject optionsMenu;
 
     private void Update()
     {
@@ -45,12 +45,8 @@ public class Pause : MonoBehaviour, IPointerEnterHandler
     public void ExitGame()
     {
         ClickSound();
-        Application.Quit();
-    }
-
-    private void OnApplicationQuit()
-    {
-        Data.SaveProfile(MainMenu.myProfile);
+        TooglePause();
+        LevelLoader.Instance.LoadScene(0);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

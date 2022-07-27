@@ -5,23 +5,22 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 10f;
 
-    public Camera cam;
-    public Transform weaponParent;
-    public float stepRate;
-    public AudioSource footstepSource;
+    [SerializeField] private Camera cam;
+    [SerializeField] private Transform weaponParent;
+    [SerializeField] private float stepRate;
+    [SerializeField] private AudioSource footstepSource;
 
     public float dashDistance = 10f;
-    public float dashDuration = 0.1f;
+    private float dashDuration = 0.1f;
     public float dashCooldown = 5f;
     private bool isDashing;
-    public bool canDash = true;
+    private bool canDash = true;
 
     private Vector2 movement;
     private Vector2 lastMove;
     private Vector3 mousePos;
     private float stepCoolDown;
 
-    private WeaponManager wm;
     private Rigidbody2D rb;
     private Animator animator;
     private Player player;
@@ -32,7 +31,6 @@ public class PlayerController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        wm = GetComponent<WeaponManager>();
         player = GetComponent<Player>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         hud = GetComponent<PlayerHUD>();
@@ -91,11 +89,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float speed;
-        speed = moveSpeed;
-        if(wm.currentWeaponData != null) speed += wm.currentWeaponData.movementSpeed;
         if(!isDashing)
-            rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 
     private void PlayFootStepAudio()
@@ -111,6 +106,18 @@ public class PlayerController : MonoBehaviour
             collision.rigidbody.velocity = Vector3.zero;
             collision.otherRigidbody.velocity = Vector3.zero;
         }   
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if ((isDashing || player.invincible) && collision.gameObject.tag == "Enemy")
+        {
+            Physics2D.IgnoreCollision(collision.collider, collision.otherCollider, true);
+        }
+        else
+        {
+            Physics2D.IgnoreCollision(collision.collider, collision.otherCollider, false);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -129,13 +136,11 @@ public class PlayerController : MonoBehaviour
     {
         isDashing = true;
         canDash = false;
-        player.invincible = true;
         SoundManager.Instance.Play("Dash");
         rb.AddForce(direction * dashDistance, ForceMode2D.Impulse);
         yield return new WaitForSeconds(dashDuration);
         hud.StartCoroutine(hud.StaminaRestore(dashCooldown));
         isDashing = false;
-        player.invincible = false;
         rb.velocity = Vector2.zero;
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;

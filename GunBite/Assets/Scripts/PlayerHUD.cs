@@ -6,52 +6,32 @@ using System.Collections.Generic;
 
 public class PlayerHUD : MonoBehaviour
 {
-    private GameObject healthBar;
-    private List<Image> hearts = new List<Image>();
     [SerializeField] private Sprite heartFull;
+    [SerializeField] private Sprite heartHalf;
     [SerializeField] private Sprite heartEmpty;
-    private GameObject armorBar;
-    private Image[] shields;
     [SerializeField] private Sprite shieldFull;
     [SerializeField] private Sprite shieldEmpty;
-    private GameObject staminaBar;
-    private TextMeshProUGUI clipSize;
-    private TextMeshProUGUI ammo;
-    private TextMeshProUGUI levelText;
-    private TextMeshProUGUI expText;
-    private Image expBar;
-    private TextMeshProUGUI moneyText;
-    private GameObject vignette;
-    private TextMeshProUGUI deadText;
-    private Transform weaponParent;
-    public GameObject reloading;
-
     [SerializeField] private Sprite emptyIcon;
     [SerializeField] private float fadeOutTime = 4f;
+    [SerializeField] private Image[] hearts;
+    [SerializeField] private GameObject armorBar;
+    [SerializeField] private Image[] shields;
+    [SerializeField] private SlicedFilledImage staminaBar;
+    [SerializeField] private TextMeshProUGUI clipSize;
+    [SerializeField] private TextMeshProUGUI ammo;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private SlicedFilledImage expBar;
+    [SerializeField] private TextMeshProUGUI moneyText;
+    [SerializeField] private GameObject vignette;
+    [SerializeField] private TextMeshProUGUI deadText;
+    [SerializeField] private Transform weaponParent;
 
     private void Awake()
     {
-        InitializeUI();
-    }
-
-    void InitializeUI()
-    {
-        healthBar = GameObject.Find("Canvas/GameHUD/BottomLeftCorner/HealthBar2");
-        hearts.AddRange(GameObject.Find("Canvas/GameHUD/BottomLeftCorner/HealthBar1").GetComponentsInChildren<Image>());
-        hearts.AddRange(GameObject.Find("Canvas/GameHUD/BottomLeftCorner/HealthBar2").GetComponentsInChildren<Image>());
-        armorBar = GameObject.Find("Canvas/GameHUD/BottomLeftCorner/ArmorBar");
-        shields = GameObject.Find("Canvas/GameHUD/BottomLeftCorner/ArmorBar").GetComponentsInChildren<Image>();
-        staminaBar = GameObject.Find("Canvas/GameHUD/StaminaBar/StaminaBarMask/StaminaBar");
-        ammo = GameObject.Find("Canvas/GameHUD/BottomRightCorner/Ammo/Ammo").GetComponent<TextMeshProUGUI>();
-        clipSize = GameObject.Find("Canvas/GameHUD/BottomRightCorner/Ammo/ClipSize").GetComponent<TextMeshProUGUI>();
-        levelText = GameObject.Find("Canvas/GameHUD/Level/LevelText").GetComponent<TextMeshProUGUI>();
-        expText = GameObject.Find("Canvas/GameHUD/ExpBar/ExpText").GetComponent<TextMeshProUGUI>();
-        expBar = GameObject.Find("Canvas/GameHUD/ExpBar/ExpBarMask/ExpBar").GetComponent<Image>();
-        moneyText = GameObject.Find("Canvas/GameHUD/Money").GetComponent<TextMeshProUGUI>();
-        vignette = GameObject.Find("Canvas/GameHUD/Vignette").gameObject;
-        deadText = GameObject.Find("Canvas/GameHUD/DeadText").GetComponent<TextMeshProUGUI>();
-        weaponParent = GameObject.Find("Canvas/GameHUD/BottomRightCorner/Weapons").transform;
-        reloading.SetActive(false);
+        foreach (Image heart in hearts)
+        {
+            heart.gameObject.SetActive(false);
+        }
     }
 
     private IEnumerator FadeToZeroAlpha()
@@ -69,22 +49,16 @@ public class PlayerHUD : MonoBehaviour
     {
         //health
         //show heart containers
-        for (int i = 0; i < hearts.Count; i++)
+        int amount = maxHealth % 2 == 0 ? maxHealth/2 : maxHealth/2 + 1;
+        for (int i = 0; i < amount; i++)
         {
-            if(i < maxHealth)
-            {
-                hearts[i].gameObject.SetActive(true);
-            }
-            else
-            {
-                hearts[i].gameObject.SetActive(false);
-            }
+            hearts[i].gameObject.SetActive(true);
         }
 
-        //set right sprite
-        for (int i = 0; i < hearts.Count; i++)
+        //set sprite
+        for (int i = 0; i < hearts.Length; i++)
         {
-            if (i < currentHealth)
+            if (i < currentHealth/2)
             {
                 hearts[i].sprite = heartFull;
             }
@@ -94,10 +68,9 @@ public class PlayerHUD : MonoBehaviour
             }
         }
 
-        //if second health bar
-        if (maxHealth >= 11)
+        if (currentHealth % 2 != 0)
         {
-            healthBar.SetActive(true);
+            hearts[currentHealth/2].sprite = heartHalf;
         }
 
         //armor
@@ -131,9 +104,8 @@ public class PlayerHUD : MonoBehaviour
 
     public void UpdateLevel(int level, int exp, int requireExp)
     {
-        levelText.text = $"Level: {level}";
-        expText.text = $"{exp}/{requireExp}";
-        float percentage = (float)exp / (float)requireExp;
+        levelText.text = $"Level: {level} ({exp}/{requireExp})";
+        float percentage = (float)exp / requireExp;
         expBar.fillAmount = percentage;
     }
 
@@ -170,7 +142,7 @@ public class PlayerHUD : MonoBehaviour
             Image icon = weaponParent.GetChild(i).GetChild(0).GetComponent<Image>();
             TextMeshProUGUI name = weaponParent.GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>();
             icon.sprite = weapons[i].icon;
-            name.text = weapons[i].name;
+            name.text = weapons[i].itemName;
         }
     }
 
@@ -187,11 +159,10 @@ public class PlayerHUD : MonoBehaviour
 
     public IEnumerator StaminaRestore(float cooldown)
     {
-        Image stamina = staminaBar.GetComponent<Image>();
-        stamina.fillAmount = 0;
-        while (stamina.fillAmount != 1)
+        staminaBar.fillAmount = 0;
+        while (staminaBar.fillAmount != 1)
         {
-            stamina.fillAmount += (Time.deltaTime / cooldown);
+            staminaBar.fillAmount += (Time.deltaTime / cooldown);
             yield return null;
         }
     }

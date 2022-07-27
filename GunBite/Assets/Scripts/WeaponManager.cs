@@ -8,17 +8,16 @@ using System.Globalization;
 public class WeaponManager : MonoBehaviour
 {
     public Weapon[] loadout;
-    public ObjectPooler bulletPooler;
-    public GameObject currentWeapon;
-    public Transform weaponHolder;
+    private GameObject currentWeapon;
+    [SerializeField] private Transform weaponHolder;
     public int selectedWeapon = 0;
-    public Weapon currentWeaponData;
-   
-    public GameObject emptyCase;
-    public AudioSource sfx;
-    public AudioSource weaponSound;
+    private Weapon currentWeaponData;
+
+    [SerializeField] private AudioSource sfx;
+    [SerializeField] private AudioSource weaponSound;
     public bool isReloading = false;
-    public bool isEquipping = false;
+    private bool isEquipping = false;
+    [SerializeField] private GameObject reloading;
 
     private float currentCooldown;
     private PlayerHUD hud;
@@ -38,7 +37,7 @@ public class WeaponManager : MonoBehaviour
             if(weapon != null)
                 weapon.Initialize();
         }
-
+        reloading.SetActive(false);
         equip = StartCoroutine(Equip(1));
         hud.RefreshWeapon(loadout);
     }
@@ -124,7 +123,7 @@ public class WeaponManager : MonoBehaviour
             {
                 StopCoroutine(reload);
                 StopCoroutine(reloadHud);
-                hud.reloading.SetActive(false);
+                reloading.SetActive(false);
             }
             if (muzzle != null) StopCoroutine(muzzle);
             if (equip != null) StopCoroutine(equip);
@@ -186,8 +185,8 @@ public class WeaponManager : MonoBehaviour
 
         for (int i = 0; i < Mathf.Max(1, currentWeaponData.pellets); i++)
         {
-            GameObject bullet = bulletPooler.Get();
-            if (currentWeaponData.name.Contains("Grenade"))
+            GameObject bullet = GameManager.Instance.bulletPooler.Get();
+            if (currentWeaponData.itemName.Contains("Grenade"))
                 bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage(), true);
             else
                 bullet.GetComponent<Bullet>().SetDamage(currentWeaponData.GetDamage(), false);
@@ -209,9 +208,6 @@ public class WeaponManager : MonoBehaviour
                 rb.AddForce(direction * currentWeaponData.bulletForce, ForceMode2D.Impulse);
             }
         }
-
-        //caseOut
-        //OnCaseOut();
 
         //gun fx
         currentWeapon.transform.position -= currentWeapon.transform.right * currentWeaponData.kickback;
@@ -293,21 +289,6 @@ public class WeaponManager : MonoBehaviour
         isReloading = false;
     }
 
-    void OnCaseOut()
-    {
-        Transform caseSpawnPoint = currentWeapon.transform.Find("CaseSpawn");
-
-        if (caseSpawnPoint == null) return;
-
-        GameObject ejectedCase = Instantiate(emptyCase, caseSpawnPoint.position, Quaternion.identity);
-        Rigidbody2D caseRigidbody = ejectedCase.GetComponent<Rigidbody2D>();
-        caseRigidbody.velocity = caseSpawnPoint.TransformDirection(-Vector3.left * 5f);
-        caseRigidbody.AddTorque(Random.Range(-0.2f, 0.2f));
-        caseRigidbody.AddForce(new Vector2(0, Random.Range(2.0f, 4.0f)), ForceMode2D.Impulse);
-
-        Destroy(ejectedCase, 5f);
-    }
-
     IEnumerator MuzzleFlash(SpriteRenderer muzzle)
     {
         muzzle.enabled = true;
@@ -369,7 +350,6 @@ public class WeaponManager : MonoBehaviour
 
     IEnumerator ReloadingCircle(float time)
     {
-        GameObject reloading = hud.reloading;
         float reloadTime = time;
         Image reloadingCircle = reloading.GetComponentInChildren<Image>();
         TextMeshProUGUI reloadTimeText = reloading.GetComponentInChildren<TextMeshProUGUI>();
@@ -388,5 +368,32 @@ public class WeaponManager : MonoBehaviour
         }
 
         reloading.SetActive(false);
+    }
+
+    public void Pickup(GameObject sceneObject)
+    {
+        bool pickedUp = false;
+        Item newItem = sceneObject.GetComponent<ItemPickup>().item;
+        switch (newItem.itemType)
+        {
+            case ItemType.Ammo:
+                if (currentWeaponData.type != 2)
+                {
+                    if (!currentWeaponData.FullAmmo())
+                    {
+                        pickedUp = true;
+                        currentWeaponData.AddMag();
+                        hud.RefreshAmmo(currentWeaponData.GetClip(), currentWeaponData.GetAmmo());
+                    }                   
+                }                             
+                break;
+        }
+
+        if (pickedUp)
+        {
+            Debug.Log("Picked up " + newItem.itemName);
+            SoundManager.Instance.PlayOneShot("Pickup");
+            Destroy(sceneObject);
+        }
     }
 }

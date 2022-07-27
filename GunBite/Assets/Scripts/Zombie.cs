@@ -131,13 +131,18 @@ public class Zombie : ZombieInfo, IDamageable
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
         hitbox.GetComponent<Collider2D>().enabled = false;
-        if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ZombieKilled();
+            GameManager.Instance.waveManager.ZombieKilled(-1);
+        }
         if (type == Type.Boomer) Explode();
         else
         {
             deathEffect.Play();
             StartCoroutine(Destroy(deathEffect.main.duration));
         }
+        Drop();
     }
 
     IEnumerator Destroy(float time)
@@ -166,6 +171,16 @@ public class Zombie : ZombieInfo, IDamageable
             }
         }
         StartCoroutine(Destroy(explodeEffect.main.duration));
+    }
+
+    void Drop()
+    {
+        List<Item> droppedItems = Loot.Drop(loot);
+        foreach(Item item in droppedItems)
+        {
+            GameObject sceneObject = Instantiate(item.pickUp, transform.position, transform.rotation);
+            sceneObject.GetComponent<ItemPickup>().item = item;
+        }
     }
 
     //private void OnDrawGizmos()

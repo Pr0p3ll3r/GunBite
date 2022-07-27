@@ -23,4 +23,5 @@ public class ZombieInfo : MonoBehaviour
 
     public int exp;
     public int money;
+    public LootItem[] loot;
 }

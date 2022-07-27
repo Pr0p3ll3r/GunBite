@@ -30,30 +30,25 @@ public class WaveManager : MonoBehaviour
 	};
 
 	[Header("Spawn Management")]
-	public Wave[] waves;
+	[SerializeField] private Wave[] waves;
 	private int currentWave = 1;
-	public Transform[] spawnPoints;
-	public Transform[] spawnPointsBossPlant;
+	[SerializeField] private Transform[] spawnPoints;
+	[SerializeField] private Transform[] spawnPointsBossPlant;
 	public GameObject bigHeadPrefab;
 
 	[Header("Start Values")]
-	public int startHealth = 100;
-	public float startMoveSpeed = 1f;
-	public int startEXP = 3;
-	public int startMoney = 4;
+	[SerializeField] private int startHealth = 100;
+	[SerializeField] private float startMoveSpeed = 1f;
+	[SerializeField] private int startEXP = 3;
+	[SerializeField] private int startMoney = 4;
 
 	[Header("Current Wave")]
-	[SerializeField]
-	private int currentHealth;
-	[SerializeField]
-	private float currentMoveSpeed;
-	[SerializeField]
-	private int currentEXP;
-	[SerializeField]
-	private int currentMoney;
+	[SerializeField] private int currentHealth;
+	[SerializeField] private float currentMoveSpeed;
+	[SerializeField] private int currentEXP;
+	[SerializeField] private int currentMoney;
 
-	private TextMeshProUGUI zombieQuantity;
-	private TextMeshProUGUI wave;
+	[SerializeField] private TextMeshProUGUI wave;
 	private GameManager gm;
 
 	private int currentZombies;
@@ -69,8 +64,6 @@ public class WaveManager : MonoBehaviour
 		currentMoveSpeed = startMoveSpeed;
 		currentEXP = startEXP;
 		currentMoney = startMoney;
-		zombieQuantity = GameObject.Find("GameHUD/ZombieQuantity/Quantity").GetComponent<TextMeshProUGUI>();
-		wave = GameObject.Find("GameHUD/Wave/Number").GetComponent<TextMeshProUGUI>();
 		wave.text = $"{currentWaveUI}/?";
 	}
 
@@ -89,10 +82,7 @@ public class WaveManager : MonoBehaviour
 				//Zombie Sound
 				if (makeSound <= 0)
 				{
-					if (PlayerPrefs.GetInt("Extra") == 1)
-						SoundManager.Instance.Play("ZombieExtra");
-					else
-						SoundManager.Instance.Play("Zombie");
+					SoundManager.Instance.Play("Zombie");
 					makeSound = 5f;
 				}
 
@@ -121,13 +111,13 @@ public class WaveManager : MonoBehaviour
 					{
 						Instantiate(_wave.enemies[0].prefab, spawnPoint.position, spawnPoint.rotation);
 
-						ZombieQuantity(1);
+						currentZombies++;
 					}
 					break;
 				case "BossHead":
 					Transform s = spawnPoints[Random.Range(0, spawnPoints.Length)];
 					Instantiate(_wave.enemies[0].prefab, s.position, s.rotation);
-					ZombieQuantity(1);
+					currentZombies++;
 					break;
             }
 		}
@@ -137,6 +127,8 @@ public class WaveManager : MonoBehaviour
 			{
 				for (int i = 0; i < enemy.amount; i++)
 				{
+					if (Player.Instance == null)
+						break;
 					SpawnEnemy(enemy.prefab);
 					yield return new WaitForSeconds(_wave.spawnDelay);
 				}
@@ -171,12 +163,8 @@ public class WaveManager : MonoBehaviour
 		
 		if(!gm.isShopTime)
         {
-			if (currentWave >= waves.Length)
+			if (currentWave != waves.Length)
 			{
-				currentWave = waves.Length - 1;
-			}
-			else
-            {
 				currentWave++;
 			}
 
@@ -205,7 +193,7 @@ public class WaveManager : MonoBehaviour
 		zombie.money = currentMoney;
 		zombie.speed = currentMoveSpeed;
 
-		ZombieQuantity(1);
+		currentZombies++;
 	}
 
 	void UpgradeEnemy()
@@ -220,12 +208,11 @@ public class WaveManager : MonoBehaviour
 		}
 
 		currentEXP++;
-		currentMoney += 5;
+		currentMoney += 6;
 	}
 
-	public void ZombieQuantity(int amount)
+	public void ZombieKilled(int amount)
     {
 		currentZombies += amount;
-		zombieQuantity.text = currentZombies.ToString();
     }
 }

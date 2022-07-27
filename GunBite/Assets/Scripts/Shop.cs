@@ -8,8 +8,8 @@ public class Shop : MonoBehaviour
 {
     public static Shop Instance;
 
-    private GameObject shopUI;
-    [HideInInspector] public TextMeshProUGUI shopText;
+    [SerializeField] private GameObject shopUI;
+    public TextMeshProUGUI shopText;
 
     private GameObject playerGO;
     private MoneySystem playerMoney;
@@ -17,25 +17,24 @@ public class Shop : MonoBehaviour
     private PlayerHUD hud;
     private Player player;
 
-    public GameObject shopItem;
-    private Transform shopList;
-    private TextMeshProUGUI moneyText;
+    [SerializeField] private GameObject shopItem;
+    [SerializeField] private Transform shopList;
+    [SerializeField] private TextMeshProUGUI moneyText;
 
-    private TextMeshProUGUI warningText;
+    [SerializeField] private TextMeshProUGUI warningText;
     IEnumerator warningTextCo = null;
 
-    private Transform inventoryList;
-    public GameObject inventoryItem;
-    private GameObject armor;
-    private Button exitButton;
+    [SerializeField] private Transform inventoryList;
+    [SerializeField] private GameObject inventoryItem;
+    [SerializeField] private GameObject armor;
+    [SerializeField] private Button exitButton;
 
-    private Transform itemInfoList;
-    public GameObject itemInfoCard;
+    [SerializeField] private Transform itemInfoList;
+    [SerializeField] private GameObject itemInfoCard;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        Instance = this;
     }
 
     private void Start()
@@ -46,15 +45,6 @@ public class Shop : MonoBehaviour
         hud = playerGO.GetComponent<PlayerHUD>();
         player = playerGO.GetComponent<Player>();
 
-        shopUI = GameObject.Find("Canvas").transform.Find("ShopUI").gameObject;
-        shopList = GameObject.Find("Canvas").transform.Find("ShopUI/ShopList/List").transform;
-        moneyText = GameObject.Find("Canvas").transform.Find("ShopUI/Money/Text").GetComponent<TextMeshProUGUI>();
-        inventoryList = GameObject.Find("Canvas").transform.Find("ShopUI/InventoryList").transform;
-        armor = GameObject.Find("Canvas").transform.Find("ShopUI/InventoryList/Armor").gameObject;
-        warningText = GameObject.Find("Canvas").transform.Find("ShopUI/Warning/Text").GetComponent<TextMeshProUGUI>();
-        exitButton = GameObject.Find("Canvas").transform.Find("ShopUI/Btn_Exit").GetComponent<Button>();
-        itemInfoList = GameObject.Find("Canvas").transform.Find("ShopUI/ItemInfo").transform;
-        shopText = GameObject.Find("Canvas").transform.Find("GameHUD/ShopText").GetComponent<TextMeshProUGUI>();
         warningText.text = "";
         shopUI.SetActive(false);
 
@@ -106,6 +96,7 @@ public class Shop : MonoBehaviour
         if (playerMoney.money >= weapon.startPrice)
         {
             playerMoney.TakeMoney(weapon.startPrice);
+            weapon.Initialize();
             wm.loadout[weapon.type] = weapon;
             ShopSound();
             hud.RefreshWeapon(wm.loadout);
@@ -129,14 +120,14 @@ public class Shop : MonoBehaviour
         weapon.Initialize();
     }
 
-    void UpgradeWeapon(Weapon weapon, GameObject itemInfo)
+    void UpgradeWeapon(Weapon weapon, GameObject infoCard)
     {
         if (playerMoney.money >= weapon.upgradePrices[weapon.GetTier()])
         {
             playerMoney.TakeMoney(weapon.upgradePrices[weapon.GetTier()]);
             weapon.Upgrade();
             ShopSound();
-            Refresh();
+            RefreshCurrentCard(weapon, infoCard);
         }
         else
         {
@@ -198,7 +189,7 @@ public class Shop : MonoBehaviour
                 GameObject item = Instantiate(inventoryItem, inventoryList) as GameObject;
 
                 item.transform.Find("Item/Icon").GetComponent<Image>().sprite = weapon.icon;
-                item.transform.Find("Item/Name").GetComponent<TextMeshProUGUI>().text = weapon.name;
+                item.transform.Find("Item/Name").GetComponent<TextMeshProUGUI>().text = weapon.itemName;
                 item.transform.Find("Item/Ammo").GetComponent<TextMeshProUGUI>().text = $"{weapon.GetAmmo()}/{weapon.ammo}";
 
                 if (weapon.FullAmmo())
@@ -221,7 +212,7 @@ public class Shop : MonoBehaviour
                 //item info card
                 GameObject infoCard = Instantiate(itemInfoCard, itemInfoList) as GameObject;
 
-                infoCard.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = weapon.name;
+                infoCard.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = weapon.itemName;
                 infoCard.transform.Find("Image/Icon").GetComponent<Image>().sprite = weapon.icon;
                 infoCard.transform.Find("Damage").GetComponent<TextMeshProUGUI>().text = $"Damage: {weapon.GetDamage()}";
 
@@ -259,7 +250,7 @@ public class Shop : MonoBehaviour
 
             for (int i = 0; i < wm.loadout.Length; i++)
             {
-                if (wm.loadout[i] != null && weapon.name == wm.loadout[i].name)
+                if (wm.loadout[i] != null && weapon.itemName == wm.loadout[i].itemName)
                 {
                     add = false;
                     break;
@@ -271,7 +262,7 @@ public class Shop : MonoBehaviour
                 GameObject newItem = Instantiate(shopItem, shopList) as GameObject;
 
                 newItem.transform.Find("Icon").GetComponent<Image>().sprite = weapon.icon;
-                newItem.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = weapon.name;
+                newItem.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = weapon.itemName;
                 newItem.transform.Find("Price").GetComponent<TextMeshProUGUI>().text = weapon.startPrice.ToString() + "$";
 
                 newItem.GetComponent<Button>().onClick.AddListener(delegate { BuyWeapon(weapon); });
@@ -294,6 +285,33 @@ public class Shop : MonoBehaviour
         for(int i = 0; i < itemInfoList.childCount; i++)
         {
             Destroy(itemInfoList.GetChild(i).gameObject);
+        }
+    }
+
+    void RefreshCurrentCard(Weapon weapon, GameObject infoCard)
+    {
+        moneyText.text = $"Money: {playerMoney.money}$";
+
+        infoCard.transform.Find("Damage").GetComponent<TextMeshProUGUI>().text = $"Damage: {weapon.GetDamage()}";
+
+        if (weapon.CanStillBeUpgraded())
+        {
+            infoCard.transform.Find("ButtonUpgrade/Price").GetComponent<TextMeshProUGUI>().text = $"Upgrade: {weapon.upgradePrices[weapon.GetTier()]}$";
+        }
+        else
+        {
+            infoCard.transform.Find("ButtonUpgrade/Price").GetComponent<TextMeshProUGUI>().text = "Cannot be upgraded";
+            infoCard.transform.Find("ButtonUpgrade").GetComponent<Button>().interactable = false;
+        }
+
+        if (weapon.canBeSold)
+        {
+            infoCard.transform.Find("ButtonSell/Price").GetComponent<TextMeshProUGUI>().text = $"Sell: {weapon.GetSellPrice()}$";
+        }
+        else
+        {
+            infoCard.transform.Find("ButtonSell/Price").GetComponent<TextMeshProUGUI>().text = "Cannot be sold";
+            infoCard.transform.Find("ButtonSell").GetComponent<Button>().interactable = false;
         }
     }
 

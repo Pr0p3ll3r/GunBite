@@ -7,47 +7,41 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    [HideInInspector] public WaveManager waveManager;
 
     public bool isShopTime = false;
     public int shopTime = 30;
 
     [SerializeField] private float startTimestamp = 0;
-
-    private TextMeshProUGUI timer;
-    private TextMeshProUGUI shopTimer;
-    private int currentGameTime;
-    private Coroutine timerCoroutine;
-    private GameObject gameOver;
-    [SerializeField] private GameObject wonEffect;
-
+    [SerializeField] private TextMeshProUGUI zombieKilledText;
+    [SerializeField] private TextMeshProUGUI timer;
+    [SerializeField] private TextMeshProUGUI shopTimer;
+    [SerializeField] private GameObject gameOver;
     [SerializeField] private TextMeshProUGUI timeSurvivedText;
     [SerializeField] private TextMeshProUGUI timeSurvivedScoreText;
-    [SerializeField] private TextMeshProUGUI zombieKilledText;
+    [SerializeField] private TextMeshProUGUI zombieKilledEndText;
     [SerializeField] private TextMeshProUGUI zombieKilledScoreText;
     [SerializeField] private TextMeshProUGUI currentScoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
 
-    [HideInInspector] public WaveManager waveManager;
-
+    private int currentGameTime;
+    private Coroutine timerCoroutine;
     private Coroutine countingCo;
     private bool started = false;
     private bool shopOpened = false;
+    private int zombieKilled = 0;
 
+    public ObjectPooler bulletPooler;
     public ObjectPooler acidPooler;
+    public ObjectPooler plantAcidPooler;
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        Instance = this;
     }
 
     private void Start()
     {
-        gameOver = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;
-        timer = GameObject.Find("GameHUD/Timer/Time").GetComponent<TextMeshProUGUI>();
-        shopTimer = GameObject.Find("Canvas").transform.Find("ShopUI/INFO/Text").GetComponent<TextMeshProUGUI>();
         waveManager = GetComponent<WaveManager>();
     }
 
@@ -99,15 +93,8 @@ public class GameManager : MonoBehaviour
 
         if (timerCoroutine != null) StopCoroutine(timerCoroutine);
 
-        //end game // won game
-        //if (!Player.Instance.isDead)
-        //{
-        //    Player.Instance.ls.GetExp(100);
-        //    Player.Instance.Control(false);
-        //    gameOver.SetActive(true);
-        //    Instantiate(wonEffect, Vector3.zero, wonEffect.transform.rotation);
-        //}
-            
+        SetGameOverScreen(zombieKilled);
+
         StartCoroutine(Wait(3f));
     }
 
@@ -159,6 +146,12 @@ public class GameManager : MonoBehaviour
         else StopCoroutine(timerCoroutine);
     }
 
+    public void ZombieKilled()
+    {
+        zombieKilled++;
+        zombieKilledText.text = zombieKilled.ToString();
+    }
+
     public void SetGameOverScreen(int zombieKilled)
     {
         string hours = (currentGameTime / 3600).ToString("00");
@@ -168,7 +161,7 @@ public class GameManager : MonoBehaviour
         timeSurvivedText.text = $"{hours}:{minutes}:{seconds}";
         timeSurvivedScoreText.text = $"+{currentGameTime}";
 
-        zombieKilledText.text = zombieKilled.ToString();
+        zombieKilledEndText.text = zombieKilled.ToString();
         int zombieScore = 10 * zombieKilled;
         zombieKilledScoreText.text = $"+{zombieScore}";
 

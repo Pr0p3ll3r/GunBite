@@ -4,33 +4,28 @@ public class Player : MonoBehaviour, IDamageable
 {
     public static Player Instance { get; private set; }
 
-    public int maxHealth = 3;
+    public int maxHealth = 4;
     public int currentHealth;
     public int currentArmor = 0;
     public bool isDead;
     public bool invincible;
-    public ProfileData playerProfile;
-    public GameObject deathEffect;
+    [SerializeField] private GameObject deathEffect;
     private PlayerHUD hud;
     private LevelSystem ls;
     private MoneySystem ms;
     private Animator animator;
 
-    private int zombieKilled = 0;
-
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        hud = GetComponent<PlayerHUD>();
-        ls = GetComponent<LevelSystem>();
-        ms = GetComponent<MoneySystem>();
-        animator = GetComponent<Animator>();
+        Instance = this;
     }
 
     void Start()
     {
+        hud = GetComponent<PlayerHUD>();
+        ls = GetComponent<LevelSystem>();
+        ms = GetComponent<MoneySystem>();
+        animator = GetComponent<Animator>();
         currentHealth = maxHealth;
         hud.RefreshBars(currentHealth, maxHealth, currentArmor);
     }
@@ -82,7 +77,6 @@ public class Player : MonoBehaviour, IDamageable
         isDead = true;
         Instantiate(deathEffect, transform.position, Quaternion.identity);
         hud.ShowDeadText();
-        GameManager.Instance.SetGameOverScreen(zombieKilled);
         GameManager.Instance.Gameover();
         Destroy(gameObject);
     }
@@ -91,7 +85,6 @@ public class Player : MonoBehaviour, IDamageable
     {
         ls.GetExp(exp);
         ms.GetMoney(money);
-        zombieKilled++;
     }
 
     public void RefillHealth()
@@ -109,5 +102,24 @@ public class Player : MonoBehaviour, IDamageable
     public void DisableInvincible()
     {
         invincible = false;
+    }
+
+    public void Pickup(GameObject sceneObject)
+    {
+        bool pickedUp = false;
+        Item newItem = sceneObject.GetComponent<ItemPickup>().item;
+        if (currentHealth < maxHealth)
+        {
+            currentHealth++;
+            hud.RefreshBars(currentHealth, maxHealth, currentArmor);
+            pickedUp = true;
+        }
+                  
+        if (pickedUp)
+        {
+            Debug.Log("Picked up " + newItem.itemName);
+            SoundManager.Instance.PlayOneShot("Pickup");
+            Destroy(sceneObject);
+        }
     }
 }

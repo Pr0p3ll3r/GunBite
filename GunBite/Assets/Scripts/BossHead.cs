@@ -87,7 +87,11 @@ public class BossHead : ZombieInfo, IDamageable
                 GetComponent<SpriteRenderer>().enabled = false;
                 GetComponent<Collider2D>().enabled = false;
                 hitbox.GetComponent<Collider2D>().enabled = false;
-                if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.ZombieKilled();
+                    GameManager.Instance.waveManager.ZombieKilled(-1);
+                }
                 Multiply();
                 StartCoroutine(Destroy(deathEffect.main.duration));
             }
@@ -118,7 +122,7 @@ public class BossHead : ZombieInfo, IDamageable
                 clone.GetComponent<BossHead>().SetSize(size - 0.5f, maxHealth/2, speed + 0.5f);
             }
 
-            GameManager.Instance.waveManager.ZombieQuantity(2);
+            GameManager.Instance.waveManager.ZombieKilled(2);
         }
     }
 

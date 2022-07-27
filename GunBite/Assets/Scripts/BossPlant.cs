@@ -14,16 +14,18 @@ public class BossPlant : ZombieInfo, IDamageable
     [SerializeField] private ParticleSystem deathEffect;
 
     [SerializeField] private Transform spitPoint;
-    [SerializeField] private GameObject acidPrefab;
     [SerializeField] private float radius;
 
     private int currentHealth;
     private float lastAttackTime = 0;
     private bool isDead;
     private bool appear;
+
+    private ObjectPooler acidPooler;
    
     void Start()
     {
+        acidPooler = GameManager.Instance.plantAcidPooler;
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         animator = GetComponent<Animator>();
@@ -81,7 +83,10 @@ public class BossPlant : ZombieInfo, IDamageable
             Vector2 direction = (player.position - transform.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            Instantiate(acidPrefab, spitPoint.position, Quaternion.Euler(new Vector3(0, 0, angle)));
+            GameObject acid = acidPooler.Get();
+            acid.transform.position = spitPoint.position;
+            acid.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            acid.SetActive(true);
         }
     }
 
@@ -110,7 +115,11 @@ public class BossPlant : ZombieInfo, IDamageable
         GetComponent<Collider2D>().enabled = false;
         hitbox.GetComponent<Collider2D>().enabled = false;
         transform.GetChild(2).gameObject.SetActive(false);
-        if (GameManager.Instance != null) GameManager.Instance.waveManager.ZombieQuantity(-1);
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ZombieKilled();
+            GameManager.Instance.waveManager.ZombieKilled(-1);
+        }
         StartCoroutine(Destroy(deathEffect.main.duration));
     }
 

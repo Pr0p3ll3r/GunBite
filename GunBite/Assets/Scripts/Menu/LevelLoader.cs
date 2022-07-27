@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 public class LevelLoader : MonoBehaviour
 {
     public static LevelLoader Instance;
-    public Animator transition;
-    public float transitionTime = 1f;
+    [SerializeField] private Animator transition;
+    [SerializeField] private float transitionTime = 1f;
 
     private void Awake()
     {

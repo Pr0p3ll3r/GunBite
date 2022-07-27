@@ -57,6 +57,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -66,8 +67,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -376,6 +377,18 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Glock-18-Sheet_0: -4470421389789091768
+      Glock-18-Sheet_3: -5686643056816979389
+      Glock-18-Sheet_2: -7469302929104496309
+      Glock-18-Sheet_5: 6452884659605910033
+      Glock-18-Sheet_1: -3335810575324765234
+      Glock-18-Sheet_6: 2815001930871156821
+      Glock-18-Sheet_4: -3154201301812293475
+      Glock-18-Sheet_7: -8595322660501682447
+      Glock-18-Sheet_9: 8902588869824919068
+      Glock-18-Sheet_10: 1299789975465043035
+      Glock-18-Sheet_8: -9102844765579008675
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
